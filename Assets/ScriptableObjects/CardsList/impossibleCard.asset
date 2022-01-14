@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c206935e4d1e1c438fd9b78980778c4, type: 3}
-  m_Name: invalidCard
+  m_Name: impossibleCard
   m_EditorClassIdentifier: 
   _cardValue: 15
   _sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}

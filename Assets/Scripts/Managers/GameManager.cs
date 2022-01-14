@@ -37,12 +37,18 @@ public class GameManager : MonoBehaviour
     private bool _isGamePaused;
 
     [SerializeField] private GameObject _wildChangePanel;
+    [SerializeField] private Card _impossibleCard;
+    private Card _activeCard;
 
     private void Start()
     {
         CustomGameEvents.GetInstance().OnFirstShuffleEnded += PrepareFirstTurn;
         CustomGameEvents.GetInstance().OnGameStart += StartGame;
         CustomGameEvents.GetInstance().OnCardPlayed += ProcessCardEffects;
+        CustomGameEvents.GetInstance().OnPlayerHasDrawnAndSkipped += EndTurn;
+        CustomGameEvents.GetInstance().OnActiveCardChanged += GetCurrentActiveCard;
+        CustomGameEvents.GetInstance().OnShuffleStart += PausePlaying;
+        CustomGameEvents.GetInstance().OnShuffleEnd += ResumePlaying;
 
         _wildChangePanel.SetActive(false);
     }
@@ -58,9 +64,8 @@ public class GameManager : MonoBehaviour
             _turnBeginTimeMarker -= Time.deltaTime;
         }
     }
-
-    //Gets called once at the start of the game, after the deck has finished shuffling
-    private void PrepareFirstTurn()
+    
+    private void PrepareFirstTurn() //Gets called once at the start of the game, after the deck has finished shuffling
     {
         _activePlayer = 0;
         _totalCardsToGive = _players.Length * _cardsToDistribute;
@@ -73,7 +78,7 @@ public class GameManager : MonoBehaviour
     {
         for(int i = 0; i < _totalCardsToGive; i++)
         {
-            //Checks if the active player can draw a card. If possible, he will draw one ; if not, the deck will shuffle instead.
+            //Checks if the active player can draw a card. If possible, it will draw one ; if not, the deck will shuffle instead, and we will retry drawing after the yield return instruction
             bool isCardGiven = _players[_activePlayer].CallDrawCard(1);
 
             if(_activePlayer == _players.Length -1)
@@ -83,7 +88,7 @@ public class GameManager : MonoBehaviour
             _activePlayer++;
             _totalCardsGiven++;
 
-            if (!isCardGiven)
+            if (!isCardGiven) //if the deck was shuffled instead of drawing a card, theses instructions make sure that we still draw the card we should have drawn
             {
                 if (_activePlayer == 0)
                 {
@@ -105,19 +110,37 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //Gets called once at the start of the game, after all players have drawn their seven starting cards
-    private void StartGame()
+    private void StartGame() //Gets called once at the start of the game, after all players have drawn their seven starting cards
     {
         StopCoroutine(DistributeCards());
-        _activePlayer = Random.Range(0, 4);
+        _activePlayer = Random.Range(0, 4) ;
         _arrows[_activePlayer].SetActive(true);
         CustomGameEvents.GetInstance().TurnStart(_activePlayer);
     }
-
-    //Is used by the end turn button
-    public void CallEndTurn()
+     
+    private void GetCurrentActiveCard(Card card)
     {
-        EndTurn();
+        if (!_isGamePaused)
+        {
+            _activeCard = card;
+        }
+    }
+
+    private void PausePlaying()
+    {
+        _isGamePaused = true;
+        CustomGameEvents.GetInstance().ActiveCardChanged(_impossibleCard);
+    }
+
+    private void ResumePlaying()
+    {
+        _isGamePaused = false;
+        CustomGameEvents.GetInstance().ActiveCardChanged(_activeCard);
+    }
+    private void ResumePlaying(Card card)
+    {
+        _isGamePaused = false;
+        CustomGameEvents.GetInstance().ActiveCardChanged(card);
     }
 
     private void EndTurn()
@@ -150,10 +173,7 @@ public class GameManager : MonoBehaviour
         _activePlayer = nextPlayer;
     }
 
-    //This method will be used to process the effects of every played card.
-    //It will be called after the card has been played, and before the player's turn ends.
-    //todo : terminer la méthode avec les effets restants
-    private void ProcessCardEffects(Card cardPlayed, int playerIndex)
+    private void ProcessCardEffects(Card cardPlayed, int playerIndex) //This method will be used to process the effects of every played card. It is called though a CustomGameEvent
     {
         switch (cardPlayed._cardValue)
         {
@@ -224,15 +244,13 @@ public class GameManager : MonoBehaviour
     private void ChooseActiveColor()
     {
         _wildChangePanel.SetActive(true);
-        _isGamePaused = true;
+        PausePlaying();
     }
 
-    //This method will be called upon clicking on a color after ChooseActiveColor
-    public void WildChange(Card card)
+    public void WildChange(Card card) //This method will be called upon clicking on a color after ChooseActiveColor
     {
-        _isGamePaused = false;
+        ResumePlaying(card);
         _wildChangePanel.SetActive(false);
-        CustomGameEvents.GetInstance().ActiveCardChanged(card);
         EndTurn();
     }
 
@@ -246,10 +264,19 @@ public class GameManager : MonoBehaviour
         _turnType = TurnType.clockwise;
     }
 
+    public void CallEndTurn() //Is used by the "end turn" button
+    {
+        EndTurn();
+    }
+
     private void OnDestroy()
     {
-        CustomGameEvents.GetInstance().OnCardPlayed -= ProcessCardEffects;
-        CustomGameEvents.GetInstance().OnFirstShuffleEnded -= PrepareFirstTurn;
         CustomGameEvents.GetInstance().OnGameStart -= StartGame;
+        CustomGameEvents.GetInstance().OnFirstShuffleEnded -= PrepareFirstTurn;
+        CustomGameEvents.GetInstance().OnCardPlayed -= ProcessCardEffects;
+        CustomGameEvents.GetInstance().OnPlayerHasDrawnAndSkipped -= EndTurn;
+        CustomGameEvents.GetInstance().OnActiveCardChanged += GetCurrentActiveCard;
+        CustomGameEvents.GetInstance().OnShuffleStart -= PausePlaying;
+        CustomGameEvents.GetInstance().OnShuffleEnd -= ResumePlaying;
     }
 }
