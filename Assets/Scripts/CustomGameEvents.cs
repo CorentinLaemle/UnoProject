@@ -18,7 +18,7 @@ public class CustomGameEvents : MonoBehaviour
         }
         _instance = this;
     }
-    //This script contains all the custom events used in the game. If you are coding anything else, you're doing it wrong !
+    //This script contains all the custom events used in the game. If you are coding anything else here, you're doing it wrong !
     //The event names should all have the same structure : On+"Subject of the event"+"Action". The events are ordered alphabetically :
 
     //A
@@ -62,9 +62,29 @@ public class CustomGameEvents : MonoBehaviour
     //N
     //O
     //P
+    public event Action<int> OnPlayerMustDraw;
+    public void PlayerMustDraw(int playerIndex)
+    {
+        OnPlayerMustDraw?.Invoke(playerIndex);
+    }
+    public event Action OnPlayerHasDrawnAndSkipped;
+    public void PlayerHasDrawnAndSkipped()
+    {
+        OnPlayerHasDrawnAndSkipped?.Invoke();
+    }
     //Q
     //R
     //S
+    public event Action OnShuffleStart;
+    public void ShuffleStart()
+    {
+        OnShuffleStart?.Invoke();
+    }
+    public event Action OnShuffleEnd;
+    public void ShuffleEnd()
+    {
+        OnShuffleEnd?.Invoke();
+    }
     //T
     public event Action<int> OnTurnStart;
     public void TurnStart(int playerindex)

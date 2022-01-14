@@ -62,13 +62,12 @@ public class CardBehaviour : MonoBehaviour
         }
     }
 
-    public void CheckActiveTurnPlayer(int activePlayerIndex)
+    private void CheckActiveTurnPlayer(int activePlayerIndex)
     {
         _isMyTurn = activePlayerIndex == _myPlayerIndex;
     }
 
     //This method is called when a card is clicked on
-    //Attention : this condition could be deleted, depending on which rules we play with. In that case, I'll need to  modify the way turn currently end
     //todo : this method will be called by the AI at it's turn, IF the chosen card can be played + is the best (?) option
     public void ClickOnCard()
     {

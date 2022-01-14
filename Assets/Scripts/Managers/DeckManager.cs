@@ -1,10 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DeckManager : MonoBehaviour
 {
     private static DeckManager _instance;
+
+    //The decklist that contains all the 108 cards. Mustn't be modified at playtime !
+    [SerializeField] private DeckList _unoDeckList;
+    [SerializeField] private DiscardManager _discardManager;
+    [SerializeField] private GameObject _myOutline;
+
+    private List<Card> _bufferDeckList; //This list is used as an intermediary list when shuffling the deck ; it should be empty at all times except when shuffling
+    private List<Card> _cardsList;      //This is the actual in-game list of cards actually in the deck
+
+    private int _deckCardsAmount;
+    private bool _isFirstShuffle;
+    private Button _myButton;
+
     public static DeckManager GetInstance()
     {
         return _instance;
@@ -16,26 +30,19 @@ public class DeckManager : MonoBehaviour
             Destroy(this);
         }
         _instance = this;
+
+        _myButton = GetComponent<Button>();
     }
-
-    //The decklist that contains all the 108 cards. Mustn't be modified at playtime !
-    [SerializeField] private DeckList _unoDeckList;
-    [SerializeField] private DiscardManager _discardManager;
-
-    private List<Card> _bufferDeckList; //This list is used as an intermediary list when shuffling the deck ; it should be empty at all times except when shuffling
-    private List<Card> _cardsList;      //This is the actual in-game list of cards actually in the deck
-
-    private int _deckCardsAmount;
-    private bool _isFirstShuffle;
 
     private void Start()
     {
-        //This should be the only method from a manager script called on Start(), the rest follow the order imposed by the calling of custom game events
-        PrepareDeck();
+        CustomGameEvents.GetInstance().OnPlayerMustDraw += ActivateButton;
+
+        _myOutline.SetActive(false);
+        PrepareDeck(); //This should be the only method from a manager script called on Start(), the rest follow the order imposed by the calling of custom game events
     }
 
-    //This method is called at the start of the game.
-    private void PrepareDeck()
+    private void PrepareDeck() //This method is called at the start of the game.
     {
         _isFirstShuffle = true;
         _cardsList = new List<Card>();
@@ -48,9 +55,10 @@ public class DeckManager : MonoBehaviour
         InitShuffle();
     }
 
-    //todo : put restrictions in place so that no player can interact with the game while the deck is shuffling
-    public void InitShuffle()
+    private void InitShuffle()
     {
+        CustomGameEvents.GetInstance().ShuffleStart(); //This event is listened to by the GameManager script, which will forbid the players from interacting with the game while the deck is shuffling
+
         if(!_isFirstShuffle)
         {
             //on rajoute dans _bufferDeckList les cartes de la défausse (sauf la dernière), et les éventuelles cartes restantes dans la bibliothèque
@@ -95,8 +103,10 @@ public class DeckManager : MonoBehaviour
 
         if(isFirstShuffle)
         { 
-            CustomGameEvents.GetInstance().FirstShuffleEnded(); 
+            CustomGameEvents.GetInstance().FirstShuffleEnded();
+            return;
         }
+        CustomGameEvents.GetInstance().ShuffleEnd();
     }
 
     public bool CheckDrawPossible(int cardNumber)
@@ -114,8 +124,27 @@ public class DeckManager : MonoBehaviour
 
     public Card DrawOneCard()
     {
+        _myOutline.SetActive(false);
+        _myButton.interactable = false;
+
         Card drawnCard = _cardsList[0];
         _cardsList.RemoveAt(0);
         return drawnCard;
+    }
+
+    private void ActivateButton(int forcedPlayerIndex)
+    {
+        if (CheckDrawPossible(1))
+        {
+            _myOutline.SetActive(true);
+            _myButton.interactable = true;
+            return;
+        }
+        ActivateButton(forcedPlayerIndex);
+    }
+
+    private void OnDestroy()
+    {
+        CustomGameEvents.GetInstance().OnPlayerMustDraw -= ActivateButton;
     }
 }

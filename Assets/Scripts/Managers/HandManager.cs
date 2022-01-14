@@ -7,12 +7,13 @@ using UnityEngine.UI;
 public class HandManager : MonoBehaviour
 {
     [Tooltip("Bottom = 0, left = 1, top = 2 and right = 3")] public int _myPlayerIndex;
-    public bool _isCurrentTurnActivePlayer;
+    [SerializeField] private bool _isCurrentTurnActivePlayer;
 
     public bool _isMainPlayerHand;
+    private bool _isForcedToDraw;
     [SerializeField] private GameObject _cardPrefab;
 
-    public List<CardDisplay> _cardsInHand;
+    public List<GameObject> _cardsInHand;
 
     [HideInInspector] public HandAutoLayout _handAutoLayout;
 
@@ -34,6 +35,25 @@ public class HandManager : MonoBehaviour
         {
             _isCurrentTurnActivePlayer = true;
         }
+        _isForcedToDraw = true;
+
+        if (_isCurrentTurnActivePlayer)
+        {
+            for(int i = 0 ; i < _cardsInHand.Count; i++)
+            {
+                if(_cardsInHand[i].GetComponent<CardBehaviour>()._isPlayable == true)
+                {
+                    _isForcedToDraw = false;
+                    break;
+                }
+            }
+
+            if(_isForcedToDraw == true)
+            {
+                CustomGameEvents.GetInstance().PlayerMustDraw(_myPlayerIndex);
+            }
+        }
+
     }
 
     private void EndTurn()
@@ -52,18 +72,27 @@ public class HandManager : MonoBehaviour
         return false;
     }
 
+    public void ClickAndDraw() //used only by the main player to physically draw a card when forced to do so
+    {
+        if (_isMainPlayerHand)
+        {
+            DrawCards(1);
+            CustomGameEvents.GetInstance().PlayerHasDrawnAndSkipped();
+        }
+    }
+
     private void DrawCards(int cardNumber)
     {
         for (int i = 0; i < cardNumber; i++)
         {
             GameObject newCard = Instantiate(_cardPrefab, transform);
+            _cardsInHand.Add(newCard);
+
             CardDisplay newCardDisplay = newCard.GetComponent<CardDisplay>();
             newCardDisplay._card = DeckManager.GetInstance().DrawOneCard();
             //If this card is part of the main player's hand, its isCardVisible bool is set to true
             newCardDisplay._isCardVisible = _isMainPlayerHand;
-                
-            //We need to add the card to the _cardsInHand list BEFORE calling the RepositionCardsInHand method, otherwize everything breaks.
-            _cardsInHand.Add(newCardDisplay);
+
             //Populates the _rectTransformList with the corresponding components from the cards contained in the _cardsInHand list
             //We do this here since all further operations will need it, and this method is only called once per draw
             _handAutoLayout._cardsRectTransformList.Add(newCard.GetComponent<RectTransform>());
