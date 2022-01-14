@@ -66,10 +66,10 @@ public class CustomGameEvents : MonoBehaviour
     //R
     //S
     //T
-    public event Action<int> OnTurnBegin;
-    public void TurnBegin(int playerindex)
+    public event Action<int> OnTurnStart;
+    public void TurnStart(int playerindex)
     {
-        OnTurnBegin?.Invoke(playerindex);
+        OnTurnStart?.Invoke(playerindex);
     }
 
     public event Action OnTurnEnd;

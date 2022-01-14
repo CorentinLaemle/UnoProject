@@ -48,6 +48,7 @@ public class DeckManager : MonoBehaviour
         InitShuffle();
     }
 
+    //todo : put restrictions in place so that no player can interact with the game while the deck is shuffling
     public void InitShuffle()
     {
         if(!_isFirstShuffle)
