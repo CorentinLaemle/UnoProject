@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(HandAutoLayout))]
 public class HandManager : MonoBehaviour
 {
     [Tooltip("Bottom = 0, left = 1, top = 2 and right = 3")] public int _myPlayerIndex;
@@ -13,55 +14,36 @@ public class HandManager : MonoBehaviour
 
     public List<CardDisplay> _cardsInHand;
 
-    [HideInInspector] public CustomUIAutoLayout _handAutoLayout;
-    private float _delayBetweenTryDraws;
-    private float _turnBeginTimeMarker;
-    private float _turnTime;
+    [HideInInspector] public HandAutoLayout _handAutoLayout;
 
     private void Awake()
     {
-        _handAutoLayout = GetComponent<CustomUIAutoLayout>();
+        _handAutoLayout = GetComponent<HandAutoLayout>();
     }
 
     private void Start()
     {
-        CustomGameEvents.GetInstance().OnTurnBegin += StartTurn;
+        CustomGameEvents.GetInstance().OnTurnStart += StartTurn;
         CustomGameEvents.GetInstance().OnCardSelected += PlayCard;
-
-        _turnTime = GameManager.GetInstance()._turnTime;
-        _delayBetweenTryDraws = GameManager.GetInstance()._delayBetweenTryDraws;
+        CustomGameEvents.GetInstance().OnTurnEnd += EndTurn;
     }
 
-    private void Update()
-    {
-        float turnTimeLimit = _turnBeginTimeMarker + _turnTime;
-
-        if(_isCurrentTurnActivePlayer && turnTimeLimit < Time.time)
-        {
-            EndTurn(_myPlayerIndex);
-        }
-    }
-
-    //Gets called indirectly by the GameManager script, through the customGameEvents script
     private void StartTurn(int playerIndex)
     {
         if(playerIndex == _myPlayerIndex)
         {
-            _turnBeginTimeMarker = Time.time;
             _isCurrentTurnActivePlayer = true;
         }
     }
-    //Gets called at the end of the player's turn. 
-    //The info will be processed by the GameManager script, in order to determine the next player and begin his/her turn
-    private void EndTurn(int playerIndex)
+
+    private void EndTurn()
     {
         _isCurrentTurnActivePlayer = false;
-        CustomGameEvents.GetInstance().TurnEnd();
     }
 
     public bool CallDrawCard(int cardNumber)
     {
-        //Checks if there is enough cards left in the deck for the requested amount of cards. If false, the deck is shuffled.
+        //Checks if there are enough cards left in the deck for the requested amount of cards. If false, the deck is shuffled.
         if (DeckManager.GetInstance().CheckDrawPossible(cardNumber))
         {
             DrawCards(cardNumber);
@@ -96,15 +78,14 @@ public class HandManager : MonoBehaviour
         if(playerIndex == _myPlayerIndex)
         {
             _handAutoLayout.RepositionCardsInHand();
-            _isCurrentTurnActivePlayer = false;
-
             CustomGameEvents.GetInstance().CardPlayed(cardPlayed, _myPlayerIndex);
         }
     }
 
     private void OnDestroy()
     {
-        CustomGameEvents.GetInstance().OnTurnBegin -= StartTurn;
+        CustomGameEvents.GetInstance().OnTurnStart -= StartTurn;
         CustomGameEvents.GetInstance().OnCardSelected -= PlayCard;
+        CustomGameEvents.GetInstance().OnTurnEnd -= EndTurn;
     }
 }

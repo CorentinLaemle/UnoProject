@@ -8,9 +8,11 @@ public class CardBehaviour : MonoBehaviour
     [SerializeField] private Card _currentActiveCard;
     [SerializeField] private Image _myCardOutline;
 
+    public bool _isPlayable;
+
     private CardDisplay _myCardDisplay;
     private Button _myButton;
-    private CustomUIAutoLayout _myHandAutoLayout;
+    private HandAutoLayout _myHandAutoLayout;
     private HandManager _myHandManager;
     private RectTransform _myRectTransform;
     private bool _isCardInHand;
@@ -29,7 +31,7 @@ public class CardBehaviour : MonoBehaviour
             _myHandManager = handManager;
             _isPlayerMainHand = _myHandManager._isMainPlayerHand;
             _myPlayerIndex = _myHandManager._myPlayerIndex;
-            _myHandAutoLayout = transform.parent.GetComponent<CustomUIAutoLayout>();
+            _myHandAutoLayout = transform.parent.GetComponent<HandAutoLayout>();
             _myRectTransform = gameObject.GetComponent<RectTransform>();
         }
     }
@@ -37,7 +39,7 @@ public class CardBehaviour : MonoBehaviour
     private void Start()
     {
         CustomGameEvents.GetInstance().OnActiveCardChanged += UpdateActiveCard;
-        CustomGameEvents.GetInstance().OnTurnBegin += CheckActiveTurnPlayer;
+        CustomGameEvents.GetInstance().OnTurnStart += CheckActiveTurnPlayer;
 
         _myCardOutline.enabled = false;
         _myButton.enabled = false;
@@ -46,18 +48,18 @@ public class CardBehaviour : MonoBehaviour
     private void UpdateActiveCard(Card newActiveCard)
     {
         _currentActiveCard = newActiveCard;
+        
+        _isPlayable =
+            _myCardDisplay._card._cardColor == Card.CardColor.black ||
+            _myCardDisplay._card._cardColor == _currentActiveCard._cardColor  ||
+            _myCardDisplay._card._cardValue == _currentActiveCard._cardValue;
 
         _myButton.enabled = false;
         if (_isPlayerMainHand)
         {
-            _myButton.enabled =
-                _myCardDisplay._card._cardColor == Card.cardColor.black ||
-                _currentActiveCard._cardColor == _myCardDisplay._card._cardColor || 
-                _currentActiveCard._cardValue == _myCardDisplay._card._cardValue ||
-                _currentActiveCard._cardValue == 13 || /*Wild card*/
-                _currentActiveCard._cardValue == 14;   /*Wild draw 4 card*/
+            _myButton.enabled = _isPlayable;
+            _myCardOutline.enabled = _isPlayable;
         }
-        _myCardOutline.enabled = _myButton.enabled;
     }
 
     public void CheckActiveTurnPlayer(int activePlayerIndex)
@@ -72,11 +74,11 @@ public class CardBehaviour : MonoBehaviour
     {
         if (_isCardInHand && _isMyTurn) 
         {
-            IHaveBeenPlayed(_myCardDisplay._card, _myPlayerIndex);
+            IHaveBeenPlayed(_myCardDisplay._card);
         }
     }
 
-    private void IHaveBeenPlayed(Card card, int playerIndex)
+    private void IHaveBeenPlayed(Card card)
     {
         for(int i = 0; i < _myHandAutoLayout._cardsRectTransformList.Count; i++)
         {
@@ -94,6 +96,6 @@ public class CardBehaviour : MonoBehaviour
     private void OnDestroy()
     {
         CustomGameEvents.GetInstance().OnActiveCardChanged -= UpdateActiveCard;
-        CustomGameEvents.GetInstance().OnTurnBegin -= CheckActiveTurnPlayer;
+        CustomGameEvents.GetInstance().OnTurnStart -= CheckActiveTurnPlayer;
     }
 }

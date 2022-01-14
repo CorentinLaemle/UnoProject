@@ -42,19 +42,19 @@ public class CardDisplay : MonoBehaviour
 
             switch (activeCard._cardColor)
             {
-                case Card.cardColor.black:
+                case Card.CardColor.black:
                     _cardColorImage.color = _colorIndex._cardBlack;
                     break;
-                case Card.cardColor.blue:
+                case Card.CardColor.blue:
                     _cardColorImage.color = _colorIndex._cardBlue;
                     break;
-                case Card.cardColor.green:
+                case Card.CardColor.green:
                     _cardColorImage.color = _colorIndex._cardGreen;
                     break;
-                case Card.cardColor.red:
+                case Card.CardColor.red:
                     _cardColorImage.color = _colorIndex._cardRed;
                     break;
-                case Card.cardColor.yellow:
+                case Card.CardColor.yellow:
                     _cardColorImage.color = _colorIndex._cardYellow;
                     break;
                 default:

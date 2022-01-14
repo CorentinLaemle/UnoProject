@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(DiscardAutoLayout))]
 public class DiscardManager : MonoBehaviour
 {
     public List<CardDisplay> _discardList;
     [SerializeField] GameObject _cardPrefab;
 
-    private CustomUIAutoLayout _discardAutoLayout;
+    private DiscardAutoLayout _discardAutoLayout;
 
     private static DiscardManager _instance;
     public static DiscardManager GetInstance()
@@ -22,7 +23,7 @@ public class DiscardManager : MonoBehaviour
         }
         _instance = this;
         
-        _discardAutoLayout = GetComponent<CustomUIAutoLayout>();
+        _discardAutoLayout = GetComponent<DiscardAutoLayout>();
     }
     private void Start()
     {
@@ -30,16 +31,13 @@ public class DiscardManager : MonoBehaviour
         CustomGameEvents.GetInstance().OnCardPlayed += DiscardCard;
     }
 
-    //This method will be called by the deck manager when shuffling ; it will remove the card's dependencies, delete the attached gameobject
+    //This method will be called by the deck manager when shuffling ; it will remove the card's dependencies then delete the attached gameobject
     public Card DeleteCardFromDiscard()
     {
         Card card = _discardList[0]._card;
         GameObject cardObject = _discardList[0].gameObject;
 
-        if(_discardList.Count == _discardAutoLayout._cardsRectTransformList.Count) //so we don't get an error caused inderectly by the repositionCardsInDiscard method
-        {
-            _discardAutoLayout._cardsRectTransformList.RemoveAt(0);
-        }
+        _discardAutoLayout._cardsRectTransformList.RemoveAt(0);
         _discardList.RemoveAt(0);
         Destroy(cardObject);
 
