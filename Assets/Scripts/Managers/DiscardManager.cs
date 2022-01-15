@@ -6,11 +6,12 @@ using UnityEngine;
 public class DiscardManager : MonoBehaviour
 {
     public List<CardDisplay> _discardList;
-    [SerializeField] GameObject _cardPrefab;
+
+    [SerializeField] private GameObject _cardPrefab;
 
     private DiscardAutoLayout _discardAutoLayout;
-
     private static DiscardManager _instance;
+
     public static DiscardManager GetInstance()
     {
         return _instance;

@@ -4,7 +4,53 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public enum TurnType
+    {
+        clockwise,
+        counterClockwise
+    }
+
+    public HandManager[] _players;
+    [Range(0, 1)] public float _delayBetweenTryDraws;
+    [Range(5, 20)] public float _turnTime;
+
+    [SerializeField] private GameObject[] _arrows;
+    [SerializeField] private int _cardsToDistribute;
+    [SerializeField] private GameObject _wildChangePanel;
+    [SerializeField] private Card _impossibleCard;
+    [SerializeField] private int _activePlayer;
+    [SerializeField] private TurnType _currentTurnType;
+
+    private int _totalCardsGiven;
+    private int _totalCardsToGive;
+    private float _turnBeginTimeMarker;
+    private bool _isGamePaused;
+    private Card _activeCard;
     private static GameManager _instance;
+
+    public int ActivePlayer
+    {
+        get
+        {
+            return _activePlayer;
+        }
+        private set
+        {
+            _activePlayer = value;
+        }
+    }
+    public TurnType CurrentTurnType
+    {
+        get
+        {
+            return _currentTurnType;
+        }
+        private set
+        {
+            _currentTurnType = value;
+        }
+    }
+
     public static GameManager GetInstance()
     {
         return _instance;
@@ -17,28 +63,6 @@ public class GameManager : MonoBehaviour
         }
         _instance = this;
     }
-
-    public enum TurnType
-    {
-        clockwise,
-        counterClockwise
-    }
-
-    public TurnType _turnType;
-    [SerializeField] [Range(0,3)] private int _activePlayer;
-    [SerializeField] private GameObject[] _arrows;
-    [SerializeField] private HandManager[] _players;
-    [SerializeField] private int _cardsToDistribute;
-    private int _totalCardsGiven;
-    private int _totalCardsToGive;
-    [Range(0, 1)] public float _delayBetweenTryDraws;
-    [Range(5,20)] public float _turnTime;
-    private float _turnBeginTimeMarker;
-    private bool _isGamePaused;
-
-    [SerializeField] private GameObject _wildChangePanel;
-    [SerializeField] private Card _impossibleCard;
-    private Card _activeCard;
 
     private void Start()
     {
@@ -67,7 +91,7 @@ public class GameManager : MonoBehaviour
     
     private void PrepareFirstTurn() //Gets called once at the start of the game, after the deck has finished shuffling
     {
-        _activePlayer = 0;
+        ActivePlayer = 0;
         _totalCardsToGive = _players.Length * _cardsToDistribute;
         _totalCardsGiven = 0;
         _isGamePaused = false;
@@ -79,22 +103,22 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i < _totalCardsToGive; i++)
         {
             //Checks if the active player can draw a card. If possible, it will draw one ; if not, the deck will shuffle instead, and we will retry drawing after the yield return instruction
-            bool isCardGiven = _players[_activePlayer].CallDrawCard(1);
+            bool isCardGiven = _players[ActivePlayer].CallDrawCard(1);
 
-            if(_activePlayer == _players.Length -1)
+            if(ActivePlayer == _players.Length -1)
             {
-                _activePlayer = -1;
+                ActivePlayer = -1;
             }
-            _activePlayer++;
+            ActivePlayer++;
             _totalCardsGiven++;
 
             if (!isCardGiven) //if the deck was shuffled instead of drawing a card, theses instructions make sure that we still draw the card we should have drawn
             {
-                if (_activePlayer == 0)
+                if (ActivePlayer == 0)
                 {
-                    _activePlayer = _players.Length - 1;
+                    ActivePlayer = _players.Length - 1;
                 }
-                _activePlayer--;
+                ActivePlayer--;
                 _totalCardsGiven--;
             }
             yield return new WaitForSeconds(_delayBetweenTryDraws);
@@ -113,9 +137,9 @@ public class GameManager : MonoBehaviour
     private void StartGame() //Gets called once at the start of the game, after all players have drawn their seven starting cards
     {
         StopCoroutine(DistributeCards());
-        _activePlayer = Random.Range(0, 4) ;
-        _arrows[_activePlayer].SetActive(true);
-        CustomGameEvents.GetInstance().TurnStart(_activePlayer);
+        ActivePlayer = Random.Range(0, 4) ;
+        _arrows[ActivePlayer].SetActive(true);
+        CustomGameEvents.GetInstance().TurnStart(ActivePlayer);
     }
      
     private void GetCurrentActiveCard(Card card)
@@ -146,8 +170,8 @@ public class GameManager : MonoBehaviour
     private void EndTurn()
     {
         CustomGameEvents.GetInstance().TurnEnd();
-        DetermineNextActivePlayer(_activePlayer, _turnType);
-        CustomGameEvents.GetInstance().TurnStart(_activePlayer);
+        DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
+        CustomGameEvents.GetInstance().TurnStart(ActivePlayer);
         _turnBeginTimeMarker = Time.time;
     }
 
@@ -168,9 +192,28 @@ public class GameManager : MonoBehaviour
                 Debug.Log(gameObject.name + " : DetermineNextActivePlayer error");
                 break;
         }
-        _arrows[_activePlayer].SetActive(false);
+        _arrows[ActivePlayer].SetActive(false);
         _arrows[nextPlayer].SetActive(true);
-        _activePlayer = nextPlayer;
+        ActivePlayer = nextPlayer;
+    }
+    public int DetermineNextActivePlayer()
+    {
+        int nextPlayer = 0;
+        switch (CurrentTurnType)
+        {
+            case TurnType.clockwise:
+                nextPlayer = ActivePlayer + 1;
+                if (ActivePlayer == _players.Length - 1) { nextPlayer = 0; }
+                break;
+            case TurnType.counterClockwise:
+                nextPlayer = ActivePlayer - 1;
+                if (ActivePlayer == 0) { nextPlayer = _players.Length - 1; }
+                break;
+            default:
+                Debug.Log(gameObject.name + " : DetermineNextActivePlayer error");
+                break;
+        }
+        return nextPlayer;
     }
 
     private void ProcessCardEffects(Card cardPlayed, int playerIndex) //This method will be used to process the effects of every played card. It is called though a CustomGameEvent
@@ -215,13 +258,13 @@ public class GameManager : MonoBehaviour
                 break;
 
             case 11: //"skip next" --> we call DetermineNextActivePlayer once here, then another time after the switch 
-                DetermineNextActivePlayer(_activePlayer, _turnType);
+                DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
                 EndTurn();
                 break;
 
             case 12: //"skip next" + "draw 2"
-                DetermineNextActivePlayer(_activePlayer, _turnType);
-                _players[_activePlayer].CallDrawCard(2);
+                DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
+                _players[ActivePlayer].CallDrawCard(2);
                 EndTurn();
                 break;
 
@@ -230,8 +273,8 @@ public class GameManager : MonoBehaviour
                 break;
 
             case 14: //"skip next" + "draw 4" + "color change"
-                DetermineNextActivePlayer(_activePlayer, _turnType);
-                _players[_activePlayer].CallDrawCard(4);
+                DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
+                _players[ActivePlayer].CallDrawCard(4);
                 ChooseActiveColor();
                 break;
 
@@ -256,12 +299,12 @@ public class GameManager : MonoBehaviour
 
     private void InvertTurnType()
     {
-        if (_turnType == TurnType.clockwise)
+        if (CurrentTurnType == TurnType.clockwise)
         {
-            _turnType = TurnType.counterClockwise;
+            CurrentTurnType = TurnType.counterClockwise;
             return;
         }
-        _turnType = TurnType.clockwise;
+        CurrentTurnType = TurnType.clockwise;
     }
 
     public void CallEndTurn() //Is used by the "end turn" button

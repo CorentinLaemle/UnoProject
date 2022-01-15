@@ -5,20 +5,20 @@ using UnityEngine;
 [RequireComponent(typeof(HandManager))]
 public class HandAutoLayout : CustomAutoLayout
 {
-    [SerializeField]
-    private enum CustomLayoutType
+    [SerializeField] private enum CustomLayoutType
     {
         top,
         left,
         bottom,
         right,
     }
+    [SerializeField] private CustomLayoutType _myLayoutType;
     [SerializeField] private bool _isLeftHandedMode;
     [SerializeField] private int _startCardsInterval;
     [SerializeField] private int _spaceDecrementStep;
+
     private HandManager _myHandManager;
 
-    [SerializeField] private CustomLayoutType _myLayoutType;
     protected override void Awake()
     {
         base.Awake();
@@ -101,22 +101,20 @@ public class HandAutoLayout : CustomAutoLayout
                 _cardsRectTransformList[i].localPosition = new Vector3(correctX, 0) * nextCardIncrement;
                 _cardsRectTransformList[i].rotation = Quaternion.Euler(cardRotation);
             }
+            return;
         }
-        else
+        for (int i = 0; i < cardsInHand; i++)
         {
-            for (int i = 0; i < cardsInHand; i++)
+            int correctY = (handAreaSize / (cardsInHand + 1)) * (i + 1) - handAreaSize / 2;
+            if (correctY == 0)
             {
-                int correctY = (handAreaSize / (cardsInHand + 1)) * (i + 1) - handAreaSize / 2;
-                if (correctY == 0)
-                {
-                    correctY = 1;
-                }
-
-                _cardsRectTransformList[i].anchorMin = anchors;
-                _cardsRectTransformList[i].anchorMax = anchors;
-                _cardsRectTransformList[i].localPosition = new Vector3(0, correctY) * nextCardIncrement;
-                _cardsRectTransformList[i].rotation = Quaternion.Euler(cardRotation);
+                correctY = 1;
             }
+
+            _cardsRectTransformList[i].anchorMin = anchors;
+            _cardsRectTransformList[i].anchorMax = anchors;
+            _cardsRectTransformList[i].localPosition = new Vector3(0, correctY) * nextCardIncrement;
+            _cardsRectTransformList[i].rotation = Quaternion.Euler(cardRotation);
         }
     }
 }
