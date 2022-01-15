@@ -5,9 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(RectTransform))]
 public class CustomAutoLayout : MonoBehaviour
 {
-    [SerializeField] protected GameObject _cardPrefab;
-
     public List<RectTransform> _cardsRectTransformList;
+
+    [SerializeField] protected GameObject _cardPrefab;
 
     protected RectTransform _rectTransform;
     protected RectTransform _cardRectTransform;

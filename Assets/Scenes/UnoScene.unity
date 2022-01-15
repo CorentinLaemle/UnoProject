@@ -213,12 +213,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e05d0e51baef09a468734dca2d0e0ee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
   _cardsRectTransformList: []
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
+  _myLayoutType: 0
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
-  _myLayoutType: 0
 --- !u!114 &75853571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231,12 +231,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bae3d8e56d89424bbd90637e95fb183, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _myPlayerIndex: 2
-  _isCurrentTurnActivePlayer: 0
-  _isMainPlayerHand: 0
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
   _cardsInHand: []
-  _handAutoLayout: {fileID: 0}
+  _myPlayerIndex: 2
+  _isMainPlayerHand: 0
+  _isCurrentTurnActivePlayer: 0
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
 --- !u!114 &75853572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,23 +327,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1db110970e23e6f44a6de6ab25381160, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _turnType: 0
-  _activePlayer: 0
-  _arrows:
-  - {fileID: 211404635}
-  - {fileID: 309408158}
-  - {fileID: 1755771328}
-  - {fileID: 342741294}
   _players:
   - {fileID: 1421044021}
   - {fileID: 876685594}
   - {fileID: 75853571}
   - {fileID: 264634507}
-  _cardsToDistribute: 7
   _delayBetweenTryDraws: 0.2
-  _turnTime: 10
+  _turnTime: 8
+  _arrows:
+  - {fileID: 211404635}
+  - {fileID: 309408158}
+  - {fileID: 1755771328}
+  - {fileID: 342741294}
+  _cardsToDistribute: 7
   _wildChangePanel: {fileID: 1490190988}
   _impossibleCard: {fileID: 11400000, guid: be67712236537ea45aeaaf912353140e, type: 2}
+  _activePlayer: 0
+  _currentTurnType: 0
 --- !u!114 &78740098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -483,12 +482,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e05d0e51baef09a468734dca2d0e0ee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
   _cardsRectTransformList: []
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
+  _myLayoutType: 3
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
-  _myLayoutType: 3
 --- !u!114 &264634507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -501,12 +500,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bae3d8e56d89424bbd90637e95fb183, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _myPlayerIndex: 3
-  _isCurrentTurnActivePlayer: 0
-  _isMainPlayerHand: 0
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
   _cardsInHand: []
-  _handAutoLayout: {fileID: 0}
+  _myPlayerIndex: 3
+  _isMainPlayerHand: 0
+  _isCurrentTurnActivePlayer: 0
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
 --- !u!114 &264634508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1705,6 +1703,7 @@ GameObject:
   - component: {fileID: 876685592}
   - component: {fileID: 876685596}
   - component: {fileID: 876685595}
+  - component: {fileID: 876685597}
   - component: {fileID: 876685594}
   - component: {fileID: 876685593}
   m_Layer: 5
@@ -1745,12 +1744,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e05d0e51baef09a468734dca2d0e0ee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
   _cardsRectTransformList: []
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
+  _myLayoutType: 1
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
-  _myLayoutType: 1
 --- !u!114 &876685594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1763,12 +1762,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bae3d8e56d89424bbd90637e95fb183, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _myPlayerIndex: 1
-  _isCurrentTurnActivePlayer: 0
-  _isMainPlayerHand: 0
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
   _cardsInHand: []
-  _handAutoLayout: {fileID: 0}
+  _myPlayerIndex: 1
+  _isMainPlayerHand: 0
+  _isCurrentTurnActivePlayer: 0
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
 --- !u!114 &876685595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1807,6 +1805,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 876685591}
   m_CullTransparentMesh: 1
+--- !u!114 &876685597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 876685591}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827309d3e6b9c114891defe2af7fd2c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cardsInHand: []
+  _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
 --- !u!1 &1033732610
 GameObject:
   m_ObjectHideFlags: 0
@@ -2107,12 +2119,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bae3d8e56d89424bbd90637e95fb183, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _myPlayerIndex: 0
-  _isCurrentTurnActivePlayer: 0
-  _isMainPlayerHand: 1
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
   _cardsInHand: []
-  _handAutoLayout: {fileID: 0}
+  _myPlayerIndex: 0
+  _isMainPlayerHand: 1
+  _isCurrentTurnActivePlayer: 0
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
 --- !u!114 &1421044022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2163,12 +2174,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e05d0e51baef09a468734dca2d0e0ee0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
   _cardsRectTransformList: []
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
+  _myLayoutType: 2
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
-  _myLayoutType: 2
 --- !u!1 &1450120421
 GameObject:
   m_ObjectHideFlags: 0
@@ -2272,8 +2283,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 422266730f2f2244eb8c4d8d12258834, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
   _cardsRectTransformList: []
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
   _isCardsRotationOn: 1
 --- !u!1 &1490190988
 GameObject:

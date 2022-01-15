@@ -29,8 +29,8 @@ public class CardBehaviour : MonoBehaviour
         if (_isCardInHand)
         {
             _myHandManager = handManager;
-            _isPlayerMainHand = _myHandManager._isMainPlayerHand;
-            _myPlayerIndex = _myHandManager._myPlayerIndex;
+            _isPlayerMainHand = _myHandManager.IsMainPlayerHand;
+            _myPlayerIndex = _myHandManager.MyPlayerIndex;
             _myHandAutoLayout = transform.parent.GetComponent<HandAutoLayout>();
             _myRectTransform = gameObject.GetComponent<RectTransform>();
         }

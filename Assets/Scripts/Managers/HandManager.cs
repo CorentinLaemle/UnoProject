@@ -6,16 +6,30 @@ using UnityEngine.UI;
 [RequireComponent(typeof(HandAutoLayout))]
 public class HandManager : MonoBehaviour
 {
-    [Tooltip("Bottom = 0, left = 1, top = 2 and right = 3")] public int _myPlayerIndex;
-    [SerializeField] private bool _isCurrentTurnActivePlayer;
-
-    public bool _isMainPlayerHand;
-    private bool _isForcedToDraw;
-    [SerializeField] private GameObject _cardPrefab;
-
     public List<GameObject> _cardsInHand;
 
-    [HideInInspector] public HandAutoLayout _handAutoLayout;
+    [SerializeField] [Tooltip("Bottom = 0, left = 1, top = 2 and right = 3")] private int _myPlayerIndex;
+    [SerializeField] private bool _isMainPlayerHand;
+    [SerializeField] private bool _isCurrentTurnActivePlayer;
+    [SerializeField] private GameObject _cardPrefab;
+
+    private bool _isForcedToDraw;
+    private HandAutoLayout _handAutoLayout;
+
+    public int MyPlayerIndex
+    {
+        get
+        {
+            return _myPlayerIndex;
+        }
+    }
+    public bool IsMainPlayerHand
+    {
+        get
+        {
+            return _isMainPlayerHand;
+        }
+    }
 
     private void Awake()
     {
@@ -31,7 +45,7 @@ public class HandManager : MonoBehaviour
 
     private void StartTurn(int playerIndex)
     {
-        if(playerIndex == _myPlayerIndex)
+        if(playerIndex == MyPlayerIndex)
         {
             _isCurrentTurnActivePlayer = true;
         }
@@ -50,10 +64,9 @@ public class HandManager : MonoBehaviour
 
             if(_isForcedToDraw == true)
             {
-                CustomGameEvents.GetInstance().PlayerMustDraw(_myPlayerIndex);
+                CustomGameEvents.GetInstance().PlayerMustDraw(MyPlayerIndex);
             }
         }
-
     }
 
     private void EndTurn()
@@ -72,9 +85,9 @@ public class HandManager : MonoBehaviour
         return false;
     }
 
-    public void ClickAndDraw() //used only by the main player to physically draw a card when forced to do so
+    public void ClickAndDraw() //used only by the main player to physically draw a card from the deck when forced to do so
     {
-        if (_isMainPlayerHand)
+        if (IsMainPlayerHand)
         {
             DrawCards(1);
             CustomGameEvents.GetInstance().PlayerHasDrawnAndSkipped();
@@ -91,7 +104,7 @@ public class HandManager : MonoBehaviour
             CardDisplay newCardDisplay = newCard.GetComponent<CardDisplay>();
             newCardDisplay._card = DeckManager.GetInstance().DrawOneCard();
             //If this card is part of the main player's hand, its isCardVisible bool is set to true
-            newCardDisplay._isCardVisible = _isMainPlayerHand;
+            newCardDisplay._isCardVisible = IsMainPlayerHand;
 
             //Populates the _rectTransformList with the corresponding components from the cards contained in the _cardsInHand list
             //We do this here since all further operations will need it, and this method is only called once per draw
@@ -104,10 +117,10 @@ public class HandManager : MonoBehaviour
     //PlayCard va ensuite lancer RepositionCardsInHand + être écouté par le discard manager qui récupèrera la carte jouée depuis la main
     private void PlayCard(Card cardPlayed, int playerIndex)
     {
-        if(playerIndex == _myPlayerIndex)
+        if(playerIndex == MyPlayerIndex)
         {
             _handAutoLayout.RepositionCardsInHand();
-            CustomGameEvents.GetInstance().CardPlayed(cardPlayed, _myPlayerIndex);
+            CustomGameEvents.GetInstance().CardPlayed(cardPlayed, MyPlayerIndex);
         }
     }
 
