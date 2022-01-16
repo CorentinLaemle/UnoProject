@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
         CustomGameEvents.GetInstance().OnFirstShuffleEnded += PrepareFirstTurn;
         CustomGameEvents.GetInstance().OnGameStart += StartGame;
         CustomGameEvents.GetInstance().OnCardPlayed += ProcessCardEffects;
-        CustomGameEvents.GetInstance().OnPlayerHasDrawnAndSkipped += EndTurn;
+        CustomGameEvents.GetInstance().OnPlayerHasSkipped += EndTurn;
         CustomGameEvents.GetInstance().OnActiveCardChanged += GetCurrentActiveCard;
         CustomGameEvents.GetInstance().OnShuffleStart += PausePlaying;
         CustomGameEvents.GetInstance().OnShuffleEnd += ResumePlaying;
@@ -317,7 +317,7 @@ public class GameManager : MonoBehaviour
         CustomGameEvents.GetInstance().OnGameStart -= StartGame;
         CustomGameEvents.GetInstance().OnFirstShuffleEnded -= PrepareFirstTurn;
         CustomGameEvents.GetInstance().OnCardPlayed -= ProcessCardEffects;
-        CustomGameEvents.GetInstance().OnPlayerHasDrawnAndSkipped -= EndTurn;
+        CustomGameEvents.GetInstance().OnPlayerHasSkipped -= EndTurn;
         CustomGameEvents.GetInstance().OnActiveCardChanged += GetCurrentActiveCard;
         CustomGameEvents.GetInstance().OnShuffleStart -= PausePlaying;
         CustomGameEvents.GetInstance().OnShuffleEnd -= ResumePlaying;

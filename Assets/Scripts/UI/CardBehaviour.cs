@@ -10,7 +10,7 @@ public class CardBehaviour : MonoBehaviour
 
     public bool _isPlayable;
 
-    private CardDisplay _myCardDisplay;
+    private Card _myCard;
     private Button _myButton;
     private HandAutoLayout _myHandAutoLayout;
     private HandManager _myHandManager;
@@ -20,9 +20,21 @@ public class CardBehaviour : MonoBehaviour
     private int _myPlayerIndex;
     private bool _isMyTurn;
 
+    public Card MyCard
+    {
+        get
+        {
+            return _myCard;
+        }
+        private set
+        {
+            _myCard = value;
+        }
+    }
+
     private void Awake()
     {
-        _myCardDisplay = gameObject.GetComponent<CardDisplay>();
+        MyCard = gameObject.GetComponent<CardDisplay>()._card;
         _myButton = gameObject.GetComponent<Button>();
 
         _isCardInHand = transform.parent.TryGetComponent(out HandManager handManager);
@@ -50,9 +62,9 @@ public class CardBehaviour : MonoBehaviour
         _currentActiveCard = newActiveCard;
         
         _isPlayable =
-            _myCardDisplay._card._cardColor == Card.CardColor.black ||
-            _myCardDisplay._card._cardColor == _currentActiveCard._cardColor  ||
-            _myCardDisplay._card._cardValue == _currentActiveCard._cardValue;
+            MyCard._cardColor == Card.CardColor.black ||
+            MyCard._cardColor == _currentActiveCard._cardColor  ||
+            MyCard._cardValue == _currentActiveCard._cardValue;
 
         _myButton.enabled = false;
         if (_isPlayerMainHand)
@@ -68,12 +80,11 @@ public class CardBehaviour : MonoBehaviour
     }
 
     //This method is called when a card is clicked on
-    //todo : this method will be called by the AI at it's turn, IF the chosen card can be played + is the best (?) option
     public void ClickOnCard()
     {
         if (_isCardInHand && _isMyTurn) 
         {
-            IHaveBeenPlayed(_myCardDisplay._card);
+            IHaveBeenPlayed(MyCard);
         }
     }
 

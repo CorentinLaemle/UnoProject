@@ -14,6 +14,7 @@ public class HandManager : MonoBehaviour
     [SerializeField] private GameObject _cardPrefab;
 
     private bool _isForcedToDraw;
+    private bool _hasDrawnThisTurn;
     private HandAutoLayout _handAutoLayout;
 
     public int MyPlayerIndex
@@ -49,6 +50,7 @@ public class HandManager : MonoBehaviour
         {
             _isCurrentTurnActivePlayer = true;
         }
+        _hasDrawnThisTurn = false;
         _isForcedToDraw = true;
 
         if (_isCurrentTurnActivePlayer)
@@ -64,7 +66,7 @@ public class HandManager : MonoBehaviour
 
             if(_isForcedToDraw == true)
             {
-                CustomGameEvents.GetInstance().PlayerMustDraw(MyPlayerIndex);
+                CustomGameEvents.GetInstance().PlayerMustDraw();
             }
         }
     }
@@ -72,6 +74,26 @@ public class HandManager : MonoBehaviour
     private void EndTurn()
     {
         _isCurrentTurnActivePlayer = false;
+    }
+
+    public void ClickAndDraw() //used only to draw a card from the deck when forced to do so
+    {
+        if (_isCurrentTurnActivePlayer && !_hasDrawnThisTurn)
+        {
+            _hasDrawnThisTurn = true;
+
+            if (!CallDrawCard(1))
+            {
+                _hasDrawnThisTurn = false;
+                ClickAndDraw();
+                return;
+            }
+            return;
+        }
+        if (_isCurrentTurnActivePlayer && _hasDrawnThisTurn)
+        {
+            CustomGameEvents.GetInstance().PlayerHasSkipped();
+        }
     }
 
     public bool CallDrawCard(int cardNumber)
@@ -83,15 +105,6 @@ public class HandManager : MonoBehaviour
             return true;
         }
         return false;
-    }
-
-    public void ClickAndDraw() //used only by the main player to physically draw a card from the deck when forced to do so
-    {
-        if (IsMainPlayerHand)
-        {
-            DrawCards(1);
-            CustomGameEvents.GetInstance().PlayerHasDrawnAndSkipped();
-        }
     }
 
     private void DrawCards(int cardNumber)

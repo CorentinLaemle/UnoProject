@@ -132,7 +132,7 @@ public class DeckManager : MonoBehaviour
         return drawnCard;
     }
 
-    private void ActivateButton(int forcedPlayerIndex)
+    private void ActivateButton()
     {
         if (CheckDrawPossible(1))
         {
@@ -140,7 +140,7 @@ public class DeckManager : MonoBehaviour
             _myButton.interactable = true;
             return;
         }
-        ActivateButton(forcedPlayerIndex);
+        ActivateButton();
     }
 
     private void OnDestroy()
