@@ -62,15 +62,20 @@ public class CustomGameEvents : MonoBehaviour
     //N
     //O
     //P
-    public event Action OnPlayerHasDrawnAndSkipped;
-    public void PlayerHasDrawnAndSkipped()
+    public event Action OnPlayerHasSkipped;
+    public void PlayerHasSkipped()
     {
-        OnPlayerHasDrawnAndSkipped?.Invoke();
+        OnPlayerHasSkipped?.Invoke();
     }
-    public event Action<int> OnPlayerMustDraw;
-    public void PlayerMustDraw(int playerIndex)
+    public event Action<int> OnPlayerHasDrawn;
+    public void PlayerHasDrawn(int playerIndex)
     {
-        OnPlayerMustDraw?.Invoke(playerIndex);
+        OnPlayerHasDrawn?.Invoke(playerIndex);
+    }
+    public event Action OnPlayerMustDraw;
+    public void PlayerMustDraw()
+    {
+        OnPlayerMustDraw?.Invoke();
     }
     //Q
     //R
