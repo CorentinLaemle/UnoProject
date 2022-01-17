@@ -31,7 +31,7 @@ public class DeckManager : MonoBehaviour
         }
         _instance = this;
 
-        _myButton = GetComponent<Button>();
+        _myButton = gameObject.GetComponent<Button>();
     }
 
     private void Start()

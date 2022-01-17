@@ -22,7 +22,7 @@ public class HandAutoLayout : CustomAutoLayout
     protected override void Awake()
     {
         base.Awake();
-        _myHandManager = GetComponent<HandManager>();
+        _myHandManager = gameObject.GetComponent<HandManager>();
     }
 
     //This method is called by the corresponding HandManager whenever it draws a card
@@ -80,7 +80,7 @@ public class HandAutoLayout : CustomAutoLayout
             {
                 //if not, recalculates by decrementing spaceBetweenCards
                 spaceBetweenCards -= _spaceDecrementStep;
-                isEnoughSpace = (handAreaSize > (cardWidth + spaceBetweenCards) * cardsInHand) ? true : false;
+                isEnoughSpace = handAreaSize > (cardWidth + spaceBetweenCards) * cardsInHand;
             }
         }
 

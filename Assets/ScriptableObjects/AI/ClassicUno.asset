@@ -14,6 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _numberOfCardColours: 5
   _maximumCardValue: 15
+  _colorPriorityIncrement: 2
+  _playerPriorityIncrement: 1
+  _valuePriorityIncrement: 1
+  _vengefulness: 1
+  _pityfulness: 1
+  _skipCardFactor: 2
   _isVengeful: 1
   _isPityful: 1
   _isExecutionner: 1

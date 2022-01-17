@@ -22,13 +22,13 @@ public class PlayerBrain : MonoBehaviour
 
     private void Awake()
     {
-        _myHandManager = GetComponent<HandManager>();
+        _myHandManager = gameObject.GetComponent<HandManager>();
         _myPlayerIndex = _myHandManager.MyPlayerIndex;
     }
 
     private void Start()
     {
-        CustomGameEvents.GetInstance().OnTurnStart += StartTurnUpdate;
+        CustomGameEvents.GetInstance().OnTurnStart += StartTurnUpdating;
         CustomGameEvents.GetInstance().OnCardSelected += UpdatePlayerPriorities;
         CustomGameEvents.GetInstance().OnPlayerHasDrawn += ReactToPlayerDrawing;
         CustomGameEvents.GetInstance().OnActiveCardChanged += UpdateActiveCard;
@@ -38,7 +38,7 @@ public class PlayerBrain : MonoBehaviour
         _valuesPriorities = new int[_brainSettings.MaxCardValue];
     }
 
-    private void StartTurnUpdate(int playerIndex)
+    private void StartTurnUpdating(int playerIndex)
     {
         if(playerIndex == _myPlayerIndex)
         {
@@ -58,6 +58,17 @@ public class PlayerBrain : MonoBehaviour
         int cardCount = 0;
 
         _cardNumberPerColor = new int[_colorPriorities.Length];
+
+        //for(int i = 0; i < _cardsInHand.Length; i++)
+        //{
+        //    int colorIndex = (int)_cardsInHand[i].MyCard._cardColor;
+        //    _cardNumberPerColor[colorIndex]++;
+
+        //    if (_cardsInHand[i]._isPlayable)
+        //    {
+        //        playableCards++;
+        //    }
+        //}
 
         foreach (CardBehaviour card in _cardsInHand) //we go through the cardsInHand array a first time, to know how many playable cards it contains
         {
@@ -89,18 +100,32 @@ public class PlayerBrain : MonoBehaviour
 
             _playablePriorities[i] = colorPriority + valuePriority + playerPriority;
         }
-
         BrainBlast(cardCount);
     }
 
     private void BrainBlast(int cardsNumber)
     {
+        int bestCardIndex = 0;
+        float bestCardPriority = 0f;
+
         if(cardsNumber == 0)
         {
             _myHandManager.ClickAndDraw();
-            ThinkThinkThink(); //Since one may play the card they just drew
+            StartTurnUpdating(_myPlayerIndex); //Since one may play the card they just drew
             return;
         }
+
+        for(int i = 0; i < cardsNumber; i++)
+        {
+            if(_playablePriorities[i] > bestCardPriority)
+            {
+                bestCardIndex = i;
+                bestCardPriority = _playablePriorities[i];
+            }
+        }
+
+        _playableCards[bestCardIndex].ClickOnCard();
+
         //todo : terminer la prise de décision
         //todo : remplir dans unity les paramètres de brainsettings
 
@@ -160,7 +185,7 @@ public class PlayerBrain : MonoBehaviour
 
     private void OnDestroy()
     {
-        CustomGameEvents.GetInstance().OnTurnStart -= StartTurnUpdate;
+        CustomGameEvents.GetInstance().OnTurnStart -= StartTurnUpdating;
         CustomGameEvents.GetInstance().OnCardSelected -= UpdatePlayerPriorities;
         CustomGameEvents.GetInstance().OnPlayerHasDrawn -= ReactToPlayerDrawing;
         CustomGameEvents.GetInstance().OnActiveCardChanged -= UpdateActiveCard;

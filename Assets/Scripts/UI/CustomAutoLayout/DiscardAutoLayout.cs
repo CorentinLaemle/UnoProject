@@ -11,7 +11,7 @@ public class DiscardAutoLayout : CustomAutoLayout
     protected override void Awake()
     {
         base.Awake();
-        _myDiscardManager = GetComponent<DiscardManager>();
+        _myDiscardManager = gameObject.GetComponent<DiscardManager>();
     }
 
     public void RepositionCardsInDiscard(int playerIndex)

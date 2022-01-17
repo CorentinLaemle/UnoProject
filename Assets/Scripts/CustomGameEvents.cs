@@ -40,6 +40,11 @@ public class CustomGameEvents : MonoBehaviour
         OnCardSelected?.Invoke(selectedCard, playerIndex);
     }
     //D
+    public event Action OnDistributeCardsEnded;
+    public void DistributeCardsEnded()
+    {
+        OnDistributeCardsEnded?.Invoke();
+    }
     //E
     //F
     public event Action OnFirstShuffleEnded;
