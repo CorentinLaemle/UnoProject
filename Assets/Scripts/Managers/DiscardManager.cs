@@ -24,11 +24,11 @@ public class DiscardManager : MonoBehaviour
         }
         _instance = this;
         
-        _discardAutoLayout = GetComponent<DiscardAutoLayout>();
+        _discardAutoLayout = gameObject.GetComponent<DiscardAutoLayout>();
     }
     private void Start()
     {
-        CustomGameEvents.GetInstance().OnGameStart += DiscardCardFromDeck;
+        CustomGameEvents.GetInstance().OnDistributeCardsEnded += DiscardCardFromDeck;
         CustomGameEvents.GetInstance().OnCardPlayed += DiscardCard;
     }
 
@@ -45,7 +45,7 @@ public class DiscardManager : MonoBehaviour
         return card;
     }
 
-    private void DiscardCardFromDeck()
+    private void DiscardCardFromDeck() //Will only be called once, at the start of the game
     {
         GameObject newCard = Instantiate(_cardPrefab, transform);
         newCard.GetComponent<CardDisplay>()._card = DeckManager.GetInstance().DrawOneCard();
@@ -57,6 +57,7 @@ public class DiscardManager : MonoBehaviour
         _discardAutoLayout.RepositionCardsInDiscard(0); //the parameter will dictate the orientation of the card. 0 means the card will face the player.
 
         CustomGameEvents.GetInstance().ActiveCardChanged(card._card);
+        CustomGameEvents.GetInstance().GameStart();
     }
 
     private void DiscardCard(Card card, int playerIndex)
@@ -74,7 +75,7 @@ public class DiscardManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        CustomGameEvents.GetInstance().OnGameStart -= DiscardCardFromDeck;
+        CustomGameEvents.GetInstance().OnDistributeCardsEnded -= DiscardCardFromDeck;
         CustomGameEvents.GetInstance().OnCardPlayed -= DiscardCard;
     }
 }

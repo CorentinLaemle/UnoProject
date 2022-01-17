@@ -173,6 +173,7 @@ GameObject:
   - component: {fileID: 75853569}
   - component: {fileID: 75853573}
   - component: {fileID: 75853572}
+  - component: {fileID: 75853574}
   - component: {fileID: 75853571}
   - component: {fileID: 75853570}
   m_Layer: 5
@@ -274,6 +275,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 75853568}
   m_CullTransparentMesh: 1
+--- !u!114 &75853574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75853568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827309d3e6b9c114891defe2af7fd2c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cardsInHand: []
+  _playableCards: []
+  _playablePriorities: []
+  _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
 --- !u!1 &78740095
 GameObject:
   m_ObjectHideFlags: 0
@@ -442,6 +459,7 @@ GameObject:
   - component: {fileID: 264634505}
   - component: {fileID: 264634509}
   - component: {fileID: 264634508}
+  - component: {fileID: 264634510}
   - component: {fileID: 264634507}
   - component: {fileID: 264634506}
   m_Layer: 5
@@ -543,6 +561,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 264634504}
   m_CullTransparentMesh: 1
+--- !u!114 &264634510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 264634504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 827309d3e6b9c114891defe2af7fd2c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cardsInHand: []
+  _playableCards: []
+  _playablePriorities: []
+  _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
 --- !u!1 &309408158
 GameObject:
   m_ObjectHideFlags: 0
@@ -1818,6 +1852,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardsInHand: []
+  _playableCards: []
+  _playablePriorities: []
   _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
 --- !u!1 &1033732610
 GameObject:

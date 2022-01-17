@@ -17,7 +17,7 @@ public class CardDisplay : MonoBehaviour
 
     private void Awake()
     {
-        _cardColorImage = GetComponent<Image>();
+        _cardColorImage = gameObject.GetComponent<Image>();
     }
 
     void Start()

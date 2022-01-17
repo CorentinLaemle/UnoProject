@@ -10,15 +10,14 @@ public class CardBehaviour : MonoBehaviour
 
     public bool _isPlayable;
 
-    private Card _myCard;
-    private Button _myButton;
+    [SerializeField] private Card _myCard;
+    [SerializeField] private Button _myButton;
     private HandAutoLayout _myHandAutoLayout;
     private HandManager _myHandManager;
     private RectTransform _myRectTransform;
     private bool _isCardInHand;
     private bool _isPlayerMainHand;
     private int _myPlayerIndex;
-    private bool _isMyTurn;
 
     public Card MyCard
     {
@@ -34,8 +33,7 @@ public class CardBehaviour : MonoBehaviour
 
     private void Awake()
     {
-        MyCard = gameObject.GetComponent<CardDisplay>()._card;
-        _myButton = gameObject.GetComponent<Button>();
+        //MyCard = gameObject.GetComponent<CardDisplay>()._card;
 
         _isCardInHand = transform.parent.TryGetComponent(out HandManager handManager);
         if (_isCardInHand)
@@ -51,7 +49,9 @@ public class CardBehaviour : MonoBehaviour
     private void Start()
     {
         CustomGameEvents.GetInstance().OnActiveCardChanged += UpdateActiveCard;
-        CustomGameEvents.GetInstance().OnTurnStart += CheckActiveTurnPlayer;
+
+        _myCard = gameObject.GetComponent<CardDisplay>()._card;
+        _myButton = gameObject.GetComponent<Button>();
 
         _myCardOutline.enabled = false;
         _myButton.enabled = false;
@@ -74,15 +74,10 @@ public class CardBehaviour : MonoBehaviour
         }
     }
 
-    private void CheckActiveTurnPlayer(int activePlayerIndex)
-    {
-        _isMyTurn = activePlayerIndex == _myPlayerIndex;
-    }
-
     //This method is called when a card is clicked on
     public void ClickOnCard()
     {
-        if (_isCardInHand && _isMyTurn) 
+        if (_isCardInHand && GameManager.GetInstance().ActivePlayer == _myPlayerIndex)
         {
             IHaveBeenPlayed(MyCard);
         }
@@ -106,6 +101,5 @@ public class CardBehaviour : MonoBehaviour
     private void OnDestroy()
     {
         CustomGameEvents.GetInstance().OnActiveCardChanged -= UpdateActiveCard;
-        CustomGameEvents.GetInstance().OnTurnStart -= CheckActiveTurnPlayer;
     }
 }

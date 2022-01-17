@@ -126,7 +126,7 @@ public class GameManager : MonoBehaviour
 
         if(_totalCardsGiven == _totalCardsToGive)
         {
-            CustomGameEvents.GetInstance().GameStart();
+            CustomGameEvents.GetInstance().DistributeCardsEnded();
         }
         else
         {

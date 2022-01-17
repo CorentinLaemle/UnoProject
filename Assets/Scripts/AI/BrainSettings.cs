@@ -5,16 +5,16 @@ using UnityEngine;
 [System.Serializable][CreateAssetMenu]
 public class BrainSettings : ScriptableObject
 {
-    [SerializeField] private int _numberOfCardColours;
-    [SerializeField] private int _maximumCardValue;
+    [SerializeField] [Tooltip("How many different colors there are in the game. Classic Uno : 5")] private int _numberOfCardColours;
+    [SerializeField] [Tooltip("The max value of a card. Classic Uno : 15")] private int _maximumCardValue;
 
-    [SerializeField] [Min(1)] private int _colorPriorityIncrement;
-    [SerializeField] [Min(1)] private int _playerPriorityIncrement;
-    [SerializeField] [Min(1)] private int _valuePriorityIncrement;
+    [SerializeField] [Min(1)] [Tooltip("How much likely the AI will play a color that another player can't.")] private int _colorPriorityIncrement;
+    [SerializeField] [Min(1)] [Tooltip("How much the AI will react to player-based factors.")] private int _playerPriorityIncrement;
+    [SerializeField] [Min(1)] [Tooltip("How much likely the AI will play a value that another player can't.")] private int _valuePriorityIncrement;
 
-    [SerializeField] [Min(0.1f)] private float _vengefulness;
-    [SerializeField] [Min(0.1f)] private float _pityfulness;
-    [SerializeField] [Min(0.1f)] private float _skipCardFactor;
+    [SerializeField] [Min(1f)] [Tooltip("How much the AI will seek vengeance against those who skipped it in the pase.")] private float _vengefulness;
+    [SerializeField] [Min(1f)] [Tooltip("How much the AI will take pity on a player it has skipped in the past.")] private float _pityfulness;
+    [SerializeField] [Min(1f)] [Tooltip("How much likely the AI is to play a skip card if possible.")] private float _skipCardFactor;
 
     [SerializeField] private bool _isVengeful;
     [SerializeField] private bool _isPityful;
