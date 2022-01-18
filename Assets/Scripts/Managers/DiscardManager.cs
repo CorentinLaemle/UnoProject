@@ -48,25 +48,31 @@ public class DiscardManager : MonoBehaviour
     private void DiscardCardFromDeck() //Will only be called once, at the start of the game
     {
         GameObject newCard = Instantiate(_cardPrefab, transform);
-        newCard.GetComponent<CardDisplay>()._card = DeckManager.GetInstance().DrawOneCard();
-        newCard.GetComponent<CardDisplay>()._isCardVisible = true;
+        Card card = DeckManager.GetInstance().DrawOneCard();
+        newCard.GetComponent<CardBehaviour>()._myCard = card;
 
-        CardDisplay card = newCard.GetComponent<CardDisplay>();
-        _discardList.Add(card);
+        CardDisplay cardDisplay = newCard.GetComponent<CardDisplay>();
+        cardDisplay._card = card;
+        cardDisplay._isCardVisible = true;
+
+        _discardList.Add(cardDisplay);
         _discardAutoLayout._cardsRectTransformList.Add(newCard.GetComponent<RectTransform>());
         _discardAutoLayout.RepositionCardsInDiscard(0); //the parameter will dictate the orientation of the card. 0 means the card will face the player.
 
-        CustomGameEvents.GetInstance().ActiveCardChanged(card._card);
+        CustomGameEvents.GetInstance().ActiveCardChanged(cardDisplay._card);
         CustomGameEvents.GetInstance().GameStart();
     }
 
     private void DiscardCard(Card card, int playerIndex)
     {
         GameObject newCard = Instantiate(_cardPrefab, transform);
-        newCard.GetComponent<CardDisplay>()._card = card;
-        newCard.GetComponent<CardDisplay>()._isCardVisible = true;
 
-        _discardList.Add(newCard.GetComponent<CardDisplay>());
+        CardDisplay cardDisplay = newCard.GetComponent<CardDisplay>();
+        newCard.GetComponent<CardBehaviour>()._myCard = card;
+        cardDisplay._card = card;
+        cardDisplay._isCardVisible = true;
+
+        _discardList.Add(cardDisplay);
         _discardAutoLayout._cardsRectTransformList.Add(newCard.GetComponent<RectTransform>());
         _discardAutoLayout.RepositionCardsInDiscard(playerIndex);
 

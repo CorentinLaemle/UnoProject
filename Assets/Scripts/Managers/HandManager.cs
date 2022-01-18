@@ -94,7 +94,7 @@ public class HandManager : MonoBehaviour
         {
             HasDrawnThisTurn = true;
 
-            if (!CallDrawCard(1))
+            if (!TryDrawCard(1))
             {
                 HasDrawnThisTurn = false;
                 ClickAndDraw();
@@ -108,7 +108,7 @@ public class HandManager : MonoBehaviour
         }
     }
 
-    public bool CallDrawCard(int cardNumber)
+    public bool TryDrawCard(int cardNumber)
     {
         //Checks if there are enough cards left in the deck for the requested amount of cards. If false, the deck is shuffled.
         if (DeckManager.GetInstance().CheckDrawPossible(cardNumber))
@@ -126,13 +126,13 @@ public class HandManager : MonoBehaviour
             GameObject newCard = Instantiate(_cardPrefab, transform);
             _cardsInHand.Add(newCard);
 
-            CardDisplay newCardDisplay = newCard.GetComponent<CardDisplay>();
-            newCardDisplay._card = DeckManager.GetInstance().DrawOneCard();
-            //If this card is part of the main player's hand, its isCardVisible bool is set to true
-            newCardDisplay._isCardVisible = IsMainPlayerHand;
+            Card card = DeckManager.GetInstance().DrawOneCard();
+
+            newCard.GetComponent<CardBehaviour>()._myCard = card;
+            newCard.GetComponent<CardDisplay>()._card = card;
+            newCard.GetComponent<CardDisplay>()._isCardVisible = IsMainPlayerHand;
 
             //Populates the _rectTransformList with the corresponding components from the cards contained in the _cardsInHand list
-            //We do this here since all further operations will need it, and this method is only called once per draw
             _handAutoLayout._cardsRectTransformList.Add(newCard.GetComponent<RectTransform>());
             _handAutoLayout.RepositionCardsInHand();
         }

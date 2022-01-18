@@ -12,8 +12,8 @@ public class DeckManager : MonoBehaviour
     [SerializeField] private DiscardManager _discardManager;
     [SerializeField] private GameObject _myOutline;
 
-    private List<Card> _bufferDeckList; //This list is used as an intermediary list when shuffling the deck ; it should be empty at all times except when shuffling
-    private List<Card> _cardsList;      //This is the actual in-game list of cards actually in the deck
+    [SerializeField] private List<Card> _cardsList; //This is the actual in-game list of cards actually in the deck
+    private List<Card> _bufferDeckList;             //This list is used as an intermediary list when shuffling the deck ; it should be empty at all times except when shuffling
 
     private int _deckCardsAmount;
     private bool _isFirstShuffle;

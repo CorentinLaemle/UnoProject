@@ -5,13 +5,13 @@ using UnityEngine.UI;
 
 public class CardBehaviour : MonoBehaviour
 {
+    public bool _isPlayable;
+    public Card _myCard;
+
     [SerializeField] private Card _currentActiveCard;
     [SerializeField] private Image _myCardOutline;
-
-    public bool _isPlayable;
-
-    [SerializeField] private Card _myCard;
     [SerializeField] private Button _myButton;
+
     private HandAutoLayout _myHandAutoLayout;
     private HandManager _myHandManager;
     private RectTransform _myRectTransform;
@@ -19,22 +19,8 @@ public class CardBehaviour : MonoBehaviour
     private bool _isPlayerMainHand;
     private int _myPlayerIndex;
 
-    public Card MyCard
-    {
-        get
-        {
-            return _myCard;
-        }
-        private set
-        {
-            _myCard = value;
-        }
-    }
-
     private void Awake()
     {
-        //MyCard = gameObject.GetComponent<CardDisplay>()._card;
-
         _isCardInHand = transform.parent.TryGetComponent(out HandManager handManager);
         if (_isCardInHand)
         {
@@ -44,17 +30,17 @@ public class CardBehaviour : MonoBehaviour
             _myHandAutoLayout = transform.parent.GetComponent<HandAutoLayout>();
             _myRectTransform = gameObject.GetComponent<RectTransform>();
         }
+        _myButton = gameObject.GetComponent<Button>();
     }
 
     private void Start()
     {
         CustomGameEvents.GetInstance().OnActiveCardChanged += UpdateActiveCard;
 
-        _myCard = gameObject.GetComponent<CardDisplay>()._card;
-        _myButton = gameObject.GetComponent<Button>();
-
         _myCardOutline.enabled = false;
         _myButton.enabled = false;
+
+        UpdateActiveCard(GameManager.GetInstance().ActiveCard);
     }
 
     private void UpdateActiveCard(Card newActiveCard)
@@ -62,9 +48,10 @@ public class CardBehaviour : MonoBehaviour
         _currentActiveCard = newActiveCard;
         
         _isPlayable =
-            MyCard._cardColor == Card.CardColor.black ||
-            MyCard._cardColor == _currentActiveCard._cardColor  ||
-            MyCard._cardValue == _currentActiveCard._cardValue;
+            _myCard._cardColor == Card.CardColor.black ||
+            _myCard._cardColor == _currentActiveCard._cardColor  ||
+            _myCard._cardValue == _currentActiveCard._cardValue ||
+            _currentActiveCard._cardColor == Card.CardColor.black;
 
         _myButton.enabled = false;
         if (_isPlayerMainHand)
@@ -79,7 +66,7 @@ public class CardBehaviour : MonoBehaviour
     {
         if (_isCardInHand && GameManager.GetInstance().ActivePlayer == _myPlayerIndex)
         {
-            IHaveBeenPlayed(MyCard);
+            IHaveBeenPlayed(_myCard);
         }
     }
 

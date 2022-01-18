@@ -17,15 +17,17 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject[] _arrows;
     [SerializeField] private int _cardsToDistribute;
     [SerializeField] private GameObject _wildChangePanel;
-    [SerializeField] private Card _impossibleCard;
+    [SerializeField] private DeckList _colorChangeDeckList;
     [SerializeField] private int _activePlayer;
     [SerializeField] private TurnType _currentTurnType;
 
+    private int _mainPlayerIndex;
     private int _totalCardsGiven;
     private int _totalCardsToGive;
     private float _turnBeginTimeMarker;
     private bool _isGamePaused;
     private Card _activeCard;
+    private Card _impossibleCard;
     private static GameManager _instance;
 
     public int ActivePlayer
@@ -48,6 +50,30 @@ public class GameManager : MonoBehaviour
         private set
         {
             _currentTurnType = value;
+        }
+    }
+    public Card ActiveCard
+    {
+        get
+        {
+            if(_activeCard != null)
+            {
+                return _activeCard;
+            }
+
+            if(_impossibleCard == null)
+            {
+                _impossibleCard = ScriptableObject.CreateInstance<Card>();
+                for (int i = 0; i < _colorChangeDeckList.cards.Count; i++)
+                {
+                    if (_colorChangeDeckList.cards[i]._cardColor == Card.CardColor.invalid)
+                    {
+                        _impossibleCard = _colorChangeDeckList.cards[i];
+                        break;
+                    }
+                }
+            }
+            return _impossibleCard;
         }
     }
 
@@ -75,6 +101,7 @@ public class GameManager : MonoBehaviour
         CustomGameEvents.GetInstance().OnShuffleEnd += ResumePlaying;
 
         _wildChangePanel.SetActive(false);
+        GetMainPlayerIndex();
     }
 
     private void Update()
@@ -88,7 +115,19 @@ public class GameManager : MonoBehaviour
             _turnBeginTimeMarker -= Time.deltaTime;
         }
     }
-    
+
+    private void GetMainPlayerIndex()
+    {
+        foreach(HandManager player in _players)
+        {
+            if (player.IsMainPlayerHand)
+            {
+                _mainPlayerIndex = player.MyPlayerIndex;
+                return;
+            }
+        }
+    }
+
     private void PrepareFirstTurn() //Gets called once at the start of the game, after the deck has finished shuffling
     {
         ActivePlayer = 0;
@@ -103,7 +142,7 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i < _totalCardsToGive; i++)
         {
             //Checks if the active player can draw a card. If possible, it will draw one ; if not, the deck will shuffle instead, and we will retry drawing after the yield return instruction
-            bool isCardGiven = _players[ActivePlayer].CallDrawCard(1);
+            bool isCardGiven = _players[ActivePlayer].TryDrawCard(1);
 
             if(ActivePlayer == _players.Length -1)
             {
@@ -153,6 +192,19 @@ public class GameManager : MonoBehaviour
     private void PausePlaying()
     {
         _isGamePaused = true;
+
+        if (_impossibleCard == null)
+        {
+            _impossibleCard = ScriptableObject.CreateInstance<Card>();
+            for (int i = 0; i < _colorChangeDeckList.cards.Count; i++)
+            {
+                if (_colorChangeDeckList.cards[i]._cardColor == Card.CardColor.invalid)
+                {
+                    _impossibleCard = _colorChangeDeckList.cards[i];
+                    break;
+                }
+            }
+        }
         CustomGameEvents.GetInstance().ActiveCardChanged(_impossibleCard);
     }
 
@@ -264,18 +316,18 @@ public class GameManager : MonoBehaviour
 
             case 12: //"skip next" + "draw 2"
                 DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
-                _players[ActivePlayer].CallDrawCard(2);
+                _players[ActivePlayer].TryDrawCard(2);
                 EndTurn();
                 break;
 
             case 13: //"color change"
-                ChooseActiveColor(); //--> will call TurnEnd() by itself so we don't use it here
+                ChooseActiveColor(playerIndex); //--> will call TurnEnd() by itself so we don't use it here
                 break;
 
             case 14: //"skip next" + "draw 4" + "color change"
                 DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
-                _players[ActivePlayer].CallDrawCard(4);
-                ChooseActiveColor();
+                _players[ActivePlayer].TryDrawCard(4);
+                ChooseActiveColor(playerIndex);
                 break;
 
             default:
@@ -284,10 +336,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void ChooseActiveColor()
+    private void ChooseActiveColor(int playerIndex)
     {
-        _wildChangePanel.SetActive(true);
-        PausePlaying();
+        if(playerIndex == _mainPlayerIndex)
+        {
+            _wildChangePanel.SetActive(true);
+            PausePlaying();
+            return;
+        }
+        int chosenColor = _players[playerIndex].GetComponent<PlayerBrain>().MostInterestingColor();
+        foreach(Card card in _colorChangeDeckList.cards)
+        {
+            if((int)card._cardColor == chosenColor)
+            {
+                WildChange(card);
+                return;
+            }
+        }
     }
 
     public void WildChange(Card card) //This method will be called upon clicking on a color after ChooseActiveColor
