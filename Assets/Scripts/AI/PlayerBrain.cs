@@ -9,15 +9,18 @@ public class PlayerBrain : MonoBehaviour
     [SerializeField] private CardBehaviour[] _playableCards;
     [SerializeField] private float[] _playablePriorities;
     [SerializeField] private BrainSettings _brainSettings;
+    [SerializeField] [Range(0, 2f)] private float _reactionTime;
 
     private HandManager _myHandManager;
+    private Card _activeCard;
     private int _myPlayerIndex;
     private int _nextPlayer;
-    private Card _activeCard;
+    private float _timeMarker; //todo : add a reaction time to the AI so a human can understand what on earth is going on
+    private bool _hasDrawn;
 
+    private float[] _playerPriorities;
     private int[] _colorPriorities;
     private int[] _valuesPriorities;
-    private float[] _playerPriorities;
     private int[] _cardNumberPerColor;
 
     private void Awake()
@@ -33,9 +36,14 @@ public class PlayerBrain : MonoBehaviour
         CustomGameEvents.GetInstance().OnPlayerHasDrawn += ReactToPlayerDrawing;
         CustomGameEvents.GetInstance().OnActiveCardChanged += UpdateActiveCard;
 
+        _cardsInHand = new CardBehaviour[0];
+        _playableCards = new CardBehaviour[0];
+        _playablePriorities = new float[0];
+
         _playerPriorities = new float[GameManager.GetInstance()._players.Length];
         _colorPriorities = new int[_brainSettings.Colours];
         _valuesPriorities = new int[_brainSettings.MaxCardValue];
+        _cardNumberPerColor = new int[0];
     }
 
     private void StartTurnUpdating(int playerIndex)
@@ -59,45 +67,38 @@ public class PlayerBrain : MonoBehaviour
 
         _cardNumberPerColor = new int[_colorPriorities.Length];
 
-        //for(int i = 0; i < _cardsInHand.Length; i++)
-        //{
-        //    int colorIndex = (int)_cardsInHand[i].MyCard._cardColor;
-        //    _cardNumberPerColor[colorIndex]++;
-
-        //    if (_cardsInHand[i]._isPlayable)
-        //    {
-        //        playableCards++;
-        //    }
-        //}
-
-        foreach (CardBehaviour card in _cardsInHand) //we go through the cardsInHand array a first time, to know how many playable cards it contains
+        for (int i = 0; i < _cardsInHand.Length; i++) //we go through the cardsInHand array a first time, to know how many playable cards it contains
         {
-            _cardNumberPerColor[(int)card.MyCard._cardColor]++;
+            int colorIndex = (int)_cardsInHand[i]._myCard._cardColor;
+            _cardNumberPerColor[colorIndex]++;
 
-            if (card._isPlayable)
+            if (_cardsInHand[i]._isPlayable)
             {
                 playableCards++;
             }
         }
-        _playableCards = new CardBehaviour[playableCards]; //We create an array of playable cards from which the AI will choose which one to pick
-        foreach (CardBehaviour card in _cardsInHand) //the we populate the new array with our playable cards
+        if(playableCards != 0)
         {
-            if (card._isPlayable)
+            _playableCards = new CardBehaviour[playableCards]; //We create an array of playable cards from which the AI will choose which one to pick
+            foreach (CardBehaviour card in _cardsInHand) //the we populate the new array with our playable cards
             {
-                _playableCards[cardCount] = card;
-                cardCount ++;
+                if (card._isPlayable)
+                {
+                    _playableCards[cardCount] = card;
+                    cardCount++;
+                }
             }
         }
-
         //Then, we calculate the priority of each card from the _playableCards array, using the values from each corresponding parameters
         for(int i = 0; i < cardCount; i++)
         {
-            int myValue = _playableCards[i].MyCard._cardValue;
+            int myValue = _playableCards[i]._myCard._cardValue;
 
-            int colorPriority = _colorPriorities[(int)_playableCards[i].MyCard._cardColor] + _cardNumberPerColor[(int)_playableCards[i].MyCard._cardColor];
+            int colorPriority = _colorPriorities[(int)_playableCards[i]._myCard._cardColor] + _cardNumberPerColor[(int)_playableCards[i]._myCard._cardColor];
             float valuePriority = _valuesPriorities[myValue] * ((myValue > 11 && myValue != 13) ? _brainSettings.SkipCardFactor : 1);
             float playerPriority = (myValue > 11 && myValue != 13) ? _playerPriorities[_nextPlayer] : 0; //we only take playerPriority into account for skipping cards
 
+            _playablePriorities = new float[_playableCards.Length];
             _playablePriorities[i] = colorPriority + valuePriority + playerPriority;
         }
         BrainBlast(cardCount);
@@ -110,8 +111,14 @@ public class PlayerBrain : MonoBehaviour
 
         if(cardsNumber == 0)
         {
+            if (!_hasDrawn)
+            {
+                _hasDrawn = true;
+                _myHandManager.ClickAndDraw();
+                StartTurnUpdating(_myPlayerIndex); //Since one may play the card they just drew
+                return;
+            }
             _myHandManager.ClickAndDraw();
-            StartTurnUpdating(_myPlayerIndex); //Since one may play the card they just drew
             return;
         }
 
@@ -124,12 +131,24 @@ public class PlayerBrain : MonoBehaviour
             }
         }
 
+        _hasDrawn = false;
         _playableCards[bestCardIndex].ClickOnCard();
+    }
 
-        //todo : terminer la prise de décision
-        //todo : remplir dans unity les paramètres de brainsettings
+    public int MostInterestingColor()
+    {
+        int bestColorIndex = 0;
+        int mostCardInAColor = 0;
 
-        //si on joue un 13 ou 14, on parcourt _cardNumberPerColor pour savoir quelle couleur privilégier
+        foreach(int colorIndex in _cardNumberPerColor)
+        {
+            if(_cardNumberPerColor[colorIndex] > mostCardInAColor)
+            {
+                bestColorIndex = colorIndex;
+            }
+        }
+
+        return bestColorIndex;
     }
 
     #region ParametersUpdates

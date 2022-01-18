@@ -291,6 +291,7 @@ MonoBehaviour:
   _playableCards: []
   _playablePriorities: []
   _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
+  _reactionTime: 0
 --- !u!1 &78740095
 GameObject:
   m_ObjectHideFlags: 0
@@ -358,7 +359,7 @@ MonoBehaviour:
   - {fileID: 342741294}
   _cardsToDistribute: 7
   _wildChangePanel: {fileID: 1490190988}
-  _impossibleCard: {fileID: 11400000, guid: be67712236537ea45aeaaf912353140e, type: 2}
+  _colorChangeDeckList: {fileID: 11400000, guid: 9f0827ab38c2f17439cb4571f4df0c28, type: 2}
   _activePlayer: 0
   _currentTurnType: 0
 --- !u!114 &78740098
@@ -577,6 +578,7 @@ MonoBehaviour:
   _playableCards: []
   _playablePriorities: []
   _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
+  _reactionTime: 0
 --- !u!1 &309408158
 GameObject:
   m_ObjectHideFlags: 0
@@ -1855,6 +1857,7 @@ MonoBehaviour:
   _playableCards: []
   _playablePriorities: []
   _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
+  _reactionTime: 0
 --- !u!1 &1033732610
 GameObject:
   m_ObjectHideFlags: 0
