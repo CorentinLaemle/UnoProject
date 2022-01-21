@@ -71,7 +71,6 @@
     <Compile Include="Assets\Scripts\UI\CustomAutoLayout\DiscardAutoLayout.cs" />
     <Compile Include="Assets\Scripts\AI\BrainSettings.cs" />
     <Compile Include="Assets\Scripts\UI\CustomAutoLayout\CustomAutoLayout.cs" />
-    <Compile Include="Assets\Scripts\AI\AIHandManager.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

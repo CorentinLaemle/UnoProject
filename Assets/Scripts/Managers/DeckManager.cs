@@ -134,13 +134,8 @@ public class DeckManager : MonoBehaviour
 
     private void ActivateButton()
     {
-        if (CheckDrawPossible(1))
-        {
-            _myOutline.SetActive(true);
-            _myButton.interactable = true;
-            return;
-        }
-        ActivateButton();
+        _myOutline.SetActive(true);
+        _myButton.interactable = true;
     }
 
     private void OnDestroy()
