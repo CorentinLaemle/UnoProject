@@ -174,7 +174,6 @@ GameObject:
   - component: {fileID: 75853573}
   - component: {fileID: 75853572}
   - component: {fileID: 75853574}
-  - component: {fileID: 75853571}
   - component: {fileID: 75853570}
   m_Layer: 5
   m_Name: PlayerHand (2)
@@ -220,23 +219,6 @@ MonoBehaviour:
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
---- !u!114 &75853571
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 75853568}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7bae3d8e56d89424bbd90637e95fb183, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cardsInHand: []
-  _myPlayerIndex: 2
-  _isMainPlayerHand: 0
-  _isCurrentTurnActivePlayer: 0
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
 --- !u!114 &75853572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,9 +270,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardsInHand: []
+  _myPlayerIndex: 2
+  _isMainPlayerHand: 0
+  _isCurrentTurnActivePlayer: 0
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
+  _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
   _playableCards: []
   _playablePriorities: []
-  _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
 --- !u!1 &78740095
 GameObject:
   m_ObjectHideFlags: 0
@@ -346,9 +332,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _players:
   - {fileID: 1421044021}
-  - {fileID: 876685594}
-  - {fileID: 75853571}
-  - {fileID: 264634507}
+  - {fileID: 876685597}
+  - {fileID: 75853574}
+  - {fileID: 264634510}
   _delayBetweenTryDraws: 0.2
   _turnTime: 8
   _arrows:
@@ -361,7 +347,7 @@ MonoBehaviour:
   _colorChangeDeckList: {fileID: 11400000, guid: 9f0827ab38c2f17439cb4571f4df0c28, type: 2}
   _activePlayer: 0
   _currentTurnType: 0
-  _aIReactionTime: 2.5
+  _aIReactionTime: 3
 --- !u!114 &78740098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -461,7 +447,6 @@ GameObject:
   - component: {fileID: 264634509}
   - component: {fileID: 264634508}
   - component: {fileID: 264634510}
-  - component: {fileID: 264634507}
   - component: {fileID: 264634506}
   m_Layer: 5
   m_Name: PlayerHand (3)
@@ -507,23 +492,6 @@ MonoBehaviour:
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
---- !u!114 &264634507
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 264634504}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7bae3d8e56d89424bbd90637e95fb183, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cardsInHand: []
-  _myPlayerIndex: 3
-  _isMainPlayerHand: 0
-  _isCurrentTurnActivePlayer: 0
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
 --- !u!114 &264634508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,9 +543,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardsInHand: []
+  _myPlayerIndex: 3
+  _isMainPlayerHand: 0
+  _isCurrentTurnActivePlayer: 0
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
+  _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
   _playableCards: []
   _playablePriorities: []
-  _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
 --- !u!1 &309408158
 GameObject:
   m_ObjectHideFlags: 0
@@ -1739,7 +1711,6 @@ GameObject:
   - component: {fileID: 876685596}
   - component: {fileID: 876685595}
   - component: {fileID: 876685597}
-  - component: {fileID: 876685594}
   - component: {fileID: 876685593}
   m_Layer: 5
   m_Name: PlayerHand (1)
@@ -1785,23 +1756,6 @@ MonoBehaviour:
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
---- !u!114 &876685594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 876685591}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7bae3d8e56d89424bbd90637e95fb183, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cardsInHand: []
-  _myPlayerIndex: 1
-  _isMainPlayerHand: 0
-  _isCurrentTurnActivePlayer: 0
-  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
 --- !u!114 &876685595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1853,9 +1807,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cardsInHand: []
+  _myPlayerIndex: 1
+  _isMainPlayerHand: 0
+  _isCurrentTurnActivePlayer: 0
+  _cardPrefab: {fileID: 5036695519854259747, guid: 0087f8e6357850e4ebfb59b8c17a905c, type: 3}
+  _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
   _playableCards: []
   _playablePriorities: []
-  _brainSettings: {fileID: 11400000, guid: 4814aac52fd221044bf7b1b83c6df4d3, type: 2}
 --- !u!1 &1033732610
 GameObject:
   m_ObjectHideFlags: 0

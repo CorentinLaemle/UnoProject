@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using System.Timers;
 using UnityEngine;
 
-[RequireComponent(typeof(HandManager))]
-public class PlayerBrain : MonoBehaviour
+public class PlayerBrain : HandManager
 {
-    [SerializeField] private CardBehaviour[] _cardsInHand;
+    [SerializeField] private BrainSettings _brainSettings;
     [SerializeField] private CardBehaviour[] _playableCards;
     [SerializeField] private float[] _playablePriorities;
-    [SerializeField] private BrainSettings _brainSettings;
 
-    private HandManager _myHandManager;
     private Card _activeCard;
-    private int _myPlayerIndex;
     private int _nextPlayer;
-    private bool _hasDrawn;
     private float _reactionTime;
 
     private float[] _playerPriorities;
@@ -23,20 +18,19 @@ public class PlayerBrain : MonoBehaviour
     private int[] _valuesPriorities;
     private int[] _cardNumberPerColor;
 
-    private void Awake()
+    protected override void Awake()
     {
-        _myHandManager = gameObject.GetComponent<HandManager>();
-        _myPlayerIndex = _myHandManager.MyPlayerIndex;
+        base.Awake();
     }
 
-    private void Start()
+    protected override void Start()
     {
-        CustomGameEvents.GetInstance().OnTurnStart += StartTurnUpdating;
+        base.Start();
+        CustomGameEvents.GetInstance().OnTurnStart += PrepareThinkThinkThink;
         CustomGameEvents.GetInstance().OnCardSelected += UpdatePlayerPriorities;
         CustomGameEvents.GetInstance().OnPlayerHasDrawn += ReactToPlayerDrawing;
         CustomGameEvents.GetInstance().OnActiveCardChanged += UpdateActiveCard;
 
-        _cardsInHand = new CardBehaviour[0];
         _playableCards = new CardBehaviour[0];
         _playablePriorities = new float[0];
 
@@ -48,18 +42,13 @@ public class PlayerBrain : MonoBehaviour
         _reactionTime = GameManager.GetInstance().AIReactionTime;
     }
 
-    private void StartTurnUpdating(int playerIndex)
+    private void PrepareThinkThinkThink(int playerIndex)
     {
         if (playerIndex == _myPlayerIndex)
         {
-            _cardsInHand = new CardBehaviour[_myHandManager._cardsInHand.Count];
-            for (int i = 0; i < _cardsInHand.Length; i++)
-            {
-                _cardsInHand[i] = _myHandManager._cardsInHand[i].GetComponent<CardBehaviour>();
-            }
             _nextPlayer = GameManager.GetInstance().DetermineNextActivePlayer();
+            Invoke(nameof(ThinkThinkThink), _reactionTime);
         }
-        Invoke(nameof(ThinkThinkThink), _reactionTime);
     }
 
     private void ThinkThinkThink() 
@@ -69,7 +58,7 @@ public class PlayerBrain : MonoBehaviour
 
         _cardNumberPerColor = new int[_colorPriorities.Length];
 
-        for (int i = 0; i < _cardsInHand.Length; i++) //we go through the cardsInHand array a first time, to know how many playable cards it contains
+        for (int i = 0; i < _cardsInHand.Count; i++) //we go through the cardsInHand array a first time, to know how many playable cards it contains
         {
             int colorIndex = (int)_cardsInHand[i]._myCard._cardColor;
             _cardNumberPerColor[colorIndex]++;
@@ -107,21 +96,21 @@ public class PlayerBrain : MonoBehaviour
         BrainBlast(cardCount);
     }
 
-    private void BrainBlast(int cardsNumber)
+    private void BrainBlast(int cardsNumber) //todo : vérifier la logique --> brainBlast et HandManager.StartTurn ne doivent pas se marcher sur les plates-bandes
     {
         int bestCardIndex = 0;
         float bestCardPriority = 0f;
 
         if(cardsNumber == 0)
         {
-            if (!_hasDrawn)
+            if (!HasDrawnThisTurn)
             {
-                _hasDrawn = true;
-                _myHandManager.ClickAndDraw();
-                StartTurnUpdating(_myPlayerIndex); //Since one may play the card they just drew
+                HasDrawnThisTurn = true;
+                base.ClickAndDraw();
+                PrepareThinkThinkThink(_myPlayerIndex); //Since one may play the card they just drew
                 return;
             }
-            _myHandManager.ClickAndDraw();
+            base.ClickAndDraw();
             return;
         }
 
@@ -134,10 +123,11 @@ public class PlayerBrain : MonoBehaviour
             }
         }
 
-        _hasDrawn = false;
+        HasDrawnThisTurn = false;
         _playableCards[bestCardIndex].ClickOnCard();
     }
 
+    #region ParametersUpdates
     public int MostInterestingColor()
     {
         int bestColorIndex = 0;
@@ -154,7 +144,6 @@ public class PlayerBrain : MonoBehaviour
         return bestColorIndex;
     }
 
-    #region ParametersUpdates
     private void UpdateActiveCard(Card card)
     {
         _activeCard = card;
@@ -207,7 +196,7 @@ public class PlayerBrain : MonoBehaviour
 
     private void OnDestroy()
     {
-        CustomGameEvents.GetInstance().OnTurnStart -= StartTurnUpdating;
+        CustomGameEvents.GetInstance().OnTurnStart -= PrepareThinkThinkThink;
         CustomGameEvents.GetInstance().OnCardSelected -= UpdatePlayerPriorities;
         CustomGameEvents.GetInstance().OnPlayerHasDrawn -= ReactToPlayerDrawing;
         CustomGameEvents.GetInstance().OnActiveCardChanged -= UpdateActiveCard;
