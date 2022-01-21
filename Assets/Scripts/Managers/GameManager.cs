@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private DeckList _colorChangeDeckList;
     [SerializeField] private int _activePlayer;
     [SerializeField] private TurnType _currentTurnType;
+    [SerializeField] [Range(0, 3f)] private float _aIReactionTime;
 
     private int _mainPlayerIndex;
     private int _totalCardsGiven;
@@ -76,6 +77,13 @@ public class GameManager : MonoBehaviour
             return _impossibleCard;
         }
     }
+    public float AIReactionTime
+    {
+        get
+        {
+            return _aIReactionTime;
+        }
+    }
 
     public static GameManager GetInstance()
     {
@@ -97,7 +105,7 @@ public class GameManager : MonoBehaviour
         CustomGameEvents.GetInstance().OnCardPlayed += ProcessCardEffects;
         CustomGameEvents.GetInstance().OnPlayerHasSkipped += EndTurn;
         CustomGameEvents.GetInstance().OnActiveCardChanged += GetCurrentActiveCard;
-        CustomGameEvents.GetInstance().OnShuffleStart += PausePlaying;
+        CustomGameEvents.GetInstance().OnShuffleStart += PausePlayingWhileShuffling;
         CustomGameEvents.GetInstance().OnShuffleEnd += ResumePlaying;
 
         _wildChangePanel.SetActive(false);
@@ -189,7 +197,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void PausePlaying()
+    private void PausePlayingWhileShuffling()
     {
         _isGamePaused = true;
 
@@ -219,7 +227,7 @@ public class GameManager : MonoBehaviour
         CustomGameEvents.GetInstance().ActiveCardChanged(card);
     }
 
-    private void EndTurn()
+    private  void EndTurn()
     {
         CustomGameEvents.GetInstance().TurnEnd();
         DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
@@ -341,7 +349,7 @@ public class GameManager : MonoBehaviour
         if(playerIndex == _mainPlayerIndex)
         {
             _wildChangePanel.SetActive(true);
-            PausePlaying();
+            PausePlayingWhileShuffling();
             return;
         }
         int chosenColor = _players[playerIndex].GetComponent<PlayerBrain>().MostInterestingColor();
@@ -384,7 +392,7 @@ public class GameManager : MonoBehaviour
         CustomGameEvents.GetInstance().OnCardPlayed -= ProcessCardEffects;
         CustomGameEvents.GetInstance().OnPlayerHasSkipped -= EndTurn;
         CustomGameEvents.GetInstance().OnActiveCardChanged += GetCurrentActiveCard;
-        CustomGameEvents.GetInstance().OnShuffleStart -= PausePlaying;
+        CustomGameEvents.GetInstance().OnShuffleStart -= PausePlayingWhileShuffling;
         CustomGameEvents.GetInstance().OnShuffleEnd -= ResumePlaying;
     }
 }

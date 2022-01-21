@@ -53,7 +53,7 @@ public class HandManager : MonoBehaviour
     {
         CustomGameEvents.GetInstance().OnTurnStart += StartTurn;
         CustomGameEvents.GetInstance().OnCardSelected += PlayCard;
-        CustomGameEvents.GetInstance().OnTurnEnd += EndTurn;
+        CustomGameEvents.GetInstance().OnTurnEnd += EndMyTurn;
     }
 
     private void StartTurn(int playerIndex)
@@ -83,7 +83,7 @@ public class HandManager : MonoBehaviour
         }
     }
 
-    private void EndTurn()
+    private void EndMyTurn()
     {
         _isCurrentTurnActivePlayer = false;
     }
@@ -102,10 +102,7 @@ public class HandManager : MonoBehaviour
             }
             return;
         }
-        if (_isCurrentTurnActivePlayer)
-        {
-            CustomGameEvents.GetInstance().PlayerHasSkipped();
-        }
+        CustomGameEvents.GetInstance().PlayerHasSkipped();
     }
 
     public bool TryDrawCard(int cardNumber)
@@ -153,6 +150,6 @@ public class HandManager : MonoBehaviour
     {
         CustomGameEvents.GetInstance().OnTurnStart -= StartTurn;
         CustomGameEvents.GetInstance().OnCardSelected -= PlayCard;
-        CustomGameEvents.GetInstance().OnTurnEnd -= EndTurn;
+        CustomGameEvents.GetInstance().OnTurnEnd -= EndMyTurn;
     }
 }

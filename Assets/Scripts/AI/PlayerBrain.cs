@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Timers;
 using UnityEngine;
 
 [RequireComponent(typeof(HandManager))]
@@ -9,14 +10,13 @@ public class PlayerBrain : MonoBehaviour
     [SerializeField] private CardBehaviour[] _playableCards;
     [SerializeField] private float[] _playablePriorities;
     [SerializeField] private BrainSettings _brainSettings;
-    [SerializeField] [Range(0, 2f)] private float _reactionTime;
 
     private HandManager _myHandManager;
     private Card _activeCard;
     private int _myPlayerIndex;
     private int _nextPlayer;
-    private float _timeMarker; //todo : add a reaction time to the AI so a human can understand what on earth is going on
     private bool _hasDrawn;
+    private float _reactionTime;
 
     private float[] _playerPriorities;
     private int[] _colorPriorities;
@@ -44,11 +44,13 @@ public class PlayerBrain : MonoBehaviour
         _colorPriorities = new int[_brainSettings.Colours];
         _valuesPriorities = new int[_brainSettings.MaxCardValue];
         _cardNumberPerColor = new int[0];
+
+        _reactionTime = GameManager.GetInstance().AIReactionTime;
     }
 
     private void StartTurnUpdating(int playerIndex)
     {
-        if(playerIndex == _myPlayerIndex)
+        if (playerIndex == _myPlayerIndex)
         {
             _cardsInHand = new CardBehaviour[_myHandManager._cardsInHand.Count];
             for (int i = 0; i < _cardsInHand.Length; i++)
@@ -57,7 +59,7 @@ public class PlayerBrain : MonoBehaviour
             }
             _nextPlayer = GameManager.GetInstance().DetermineNextActivePlayer();
         }
-        ThinkThinkThink();
+        Invoke(nameof(ThinkThinkThink), _reactionTime);
     }
 
     private void ThinkThinkThink() 
@@ -88,18 +90,19 @@ public class PlayerBrain : MonoBehaviour
                     cardCount++;
                 }
             }
-        }
-        //Then, we calculate the priority of each card from the _playableCards array, using the values from each corresponding parameters
-        for(int i = 0; i < cardCount; i++)
-        {
-            int myValue = _playableCards[i]._myCard._cardValue;
 
-            int colorPriority = _colorPriorities[(int)_playableCards[i]._myCard._cardColor] + _cardNumberPerColor[(int)_playableCards[i]._myCard._cardColor];
-            float valuePriority = _valuesPriorities[myValue] * ((myValue > 11 && myValue != 13) ? _brainSettings.SkipCardFactor : 1);
-            float playerPriority = (myValue > 11 && myValue != 13) ? _playerPriorities[_nextPlayer] : 0; //we only take playerPriority into account for skipping cards
+            //Then, we calculate the priority of each card from the _playableCards array, using the values from each corresponding parameters
+            for (int i = 0; i < cardCount; i++)
+            {
+                int myValue = _playableCards[i]._myCard._cardValue;
 
-            _playablePriorities = new float[_playableCards.Length];
-            _playablePriorities[i] = colorPriority + valuePriority + playerPriority;
+                int colorPriority = _colorPriorities[(int)_playableCards[i]._myCard._cardColor] + _cardNumberPerColor[(int)_playableCards[i]._myCard._cardColor];
+                float valuePriority = _valuesPriorities[myValue] * ((myValue > 11 && myValue != 13) ? _brainSettings.SkipCardFactor : 1);
+                float playerPriority = (myValue > 11 && myValue != 13) ? _playerPriorities[_nextPlayer] : 0; //we only take playerPriority into account for skipping cards
+
+                _playablePriorities = new float[_playableCards.Length];
+                _playablePriorities[i] = colorPriority + valuePriority + playerPriority;
+            }
         }
         BrainBlast(cardCount);
     }
