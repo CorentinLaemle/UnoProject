@@ -59,7 +59,7 @@ public class DiscardManager : MonoBehaviour
         _discardAutoLayout._cardsRectTransformList.Add(newCard.GetComponent<RectTransform>());
         _discardAutoLayout.RepositionCardsInDiscard(0); //the parameter will dictate the orientation of the card. 0 means the card will face the player.
 
-        CustomGameEvents.GetInstance().ActiveCardChanged(cardDisplay._card);
+        CustomGameEvents.GetInstance().ActiveCardChanged(card);
         CustomGameEvents.GetInstance().GameStart();
     }
 
@@ -76,7 +76,7 @@ public class DiscardManager : MonoBehaviour
         _discardAutoLayout._cardsRectTransformList.Add(newCard.GetComponent<RectTransform>());
         _discardAutoLayout.RepositionCardsInDiscard(playerIndex);
 
-        CustomGameEvents.GetInstance().ActiveCardChanged(card);
+        CustomGameEvents.GetInstance().CardPlayedAndDiscarded(card, playerIndex);
     }
 
     private void OnDestroy()

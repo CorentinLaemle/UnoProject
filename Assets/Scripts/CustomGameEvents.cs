@@ -34,6 +34,12 @@ public class CustomGameEvents : MonoBehaviour
     {
         OnCardPlayed?.Invoke(playedCard,playerIndex);
     }
+
+    public event Action<Card,int> OnCardPlayedAndDiscarded;
+    public void CardPlayedAndDiscarded(Card playedCard, int playerIndex)
+    {
+        OnCardPlayedAndDiscarded?.Invoke(playedCard, playerIndex);
+    }
     public event Action<Card,int> OnCardSelected;
     public void CardSelected(Card selectedCard, int playerIndex)
     {
@@ -100,12 +106,6 @@ public class CustomGameEvents : MonoBehaviour
     public void TurnStart(int playerindex)
     {
         OnTurnStart?.Invoke(playerindex);
-    }
-
-    public event Action OnTurnEnd;
-    public void TurnEnd()
-    {
-        OnTurnEnd?.Invoke();
     }
     //U
     //V
