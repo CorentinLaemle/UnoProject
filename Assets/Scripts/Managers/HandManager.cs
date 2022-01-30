@@ -103,9 +103,11 @@ public class HandManager : MonoBehaviour
         //Checks if there are enough cards left in the deck for the requested amount of cards. If false, the deck is shuffled.
         if (DeckManager.GetInstance().CheckDrawPossible(cardNumber))
         {
+            Debug.Log("TryDrawCard returns true : " + cardNumber.ToString());
             DrawCards(cardNumber);
             return true;
         }
+        Debug.Log("TryDrawCard returns false : " + cardNumber.ToString());
         return false;
     }
 

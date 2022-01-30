@@ -38,14 +38,14 @@ public class CardBehaviour : MonoBehaviour
         CustomGameEvents.GetInstance().OnActiveCardChanged += UpdateActiveCard;
 
         _myCardOutline.enabled = false;
-        _myButton.enabled = false;
+        _myButton.interactable = false;
 
         UpdateActiveCard(GameManager.GetInstance().ActiveCard);
     }
 
-    private void UpdateActiveCard(Card newActiveCard)
+    private void UpdateActiveCard(Card card)
     {
-        _currentActiveCard = newActiveCard;
+        _currentActiveCard = card;
         
         _isPlayable =
             _myCard._cardColor == Card.CardColor.black ||
@@ -53,10 +53,12 @@ public class CardBehaviour : MonoBehaviour
             _myCard._cardValue == _currentActiveCard._cardValue ||
             _currentActiveCard._cardColor == Card.CardColor.black;
 
-        _myButton.enabled = false;
-        if (_isPlayerMainHand)
+        _myButton.interactable = false;
+        _myCardOutline.enabled = false;
+
+        if (_isPlayerMainHand && GameManager.GetInstance().ActivePlayer == _myPlayerIndex)
         {
-            _myButton.enabled = _isPlayable;
+            _myButton.interactable = _isPlayable;
             _myCardOutline.enabled = _isPlayable;
         }
     }

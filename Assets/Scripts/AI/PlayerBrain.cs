@@ -46,7 +46,7 @@ public class PlayerBrain : HandManager
     {
         if (playerIndex == _myPlayerIndex)
         {
-            _nextPlayer = GameManager.GetInstance().DetermineNextActivePlayer();
+            _nextPlayer = GameManager.GetInstance().GetNextActivePlayer();
             Invoke(nameof(ThinkThinkThink), _reactionTime);
         }
     }
@@ -105,7 +105,6 @@ public class PlayerBrain : HandManager
         {
             if (!HasDrawnThisTurn)
             {
-                HasDrawnThisTurn = true;
                 base.ClickAndDraw();
                 PrepareThinkThinkThink(_myPlayerIndex); //Since one may play the card they just drew
                 return;
@@ -138,9 +137,9 @@ public class PlayerBrain : HandManager
             if(_cardNumberPerColor[colorIndex] > mostCardInAColor)
             {
                 bestColorIndex = colorIndex;
+                mostCardInAColor = _cardNumberPerColor[colorIndex];
             }
         }
-
         return bestColorIndex;
     }
 
@@ -151,7 +150,7 @@ public class PlayerBrain : HandManager
 
     private void UpdatePlayerPriorities(Card cardPlayed, int playerIndex)
     {
-        int nextPlayer = GameManager.GetInstance().DetermineNextActivePlayer();
+        int nextPlayer = GameManager.GetInstance().GetNextActivePlayer();
 
         if (nextPlayer == _myPlayerIndex && _brainSettings.IsVengeful) //Builds-up a thrist for vengeance against those who have wronged this player
         {

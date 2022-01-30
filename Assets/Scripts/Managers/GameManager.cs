@@ -20,7 +20,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private DeckList _colorChangeDeckList;
     [SerializeField] private int _activePlayer;
     [SerializeField] private TurnType _currentTurnType;
-    [SerializeField] [Range(0, 3f)] private float _aIReactionTime;
+    [SerializeField] [Range(0,3f)] private float _aIReactionTime;
+    [SerializeField] [Range(0, 3f)] private float _effectsAnimationDuration;
 
     private int _mainPlayerIndex;
     private int _totalCardsGiven;
@@ -57,7 +58,7 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            if(_activeCard != null)
+            if(_activeCard != null && _isGamePaused == false)
             {
                 return _activeCard;
             }
@@ -75,6 +76,10 @@ public class GameManager : MonoBehaviour
                 }
             }
             return _impossibleCard;
+        }
+        private set
+        {
+            _activeCard = value;
         }
     }
     public float AIReactionTime
@@ -102,10 +107,10 @@ public class GameManager : MonoBehaviour
     {
         CustomGameEvents.GetInstance().OnFirstShuffleEnded += PrepareFirstTurn;
         CustomGameEvents.GetInstance().OnGameStart += StartGame;
-        CustomGameEvents.GetInstance().OnCardPlayed += ProcessCardEffects;
+        CustomGameEvents.GetInstance().OnCardPlayedAndDiscarded += ProcessCardEffects;
         CustomGameEvents.GetInstance().OnPlayerHasSkipped += EndTurn;
-        CustomGameEvents.GetInstance().OnActiveCardChanged += GetCurrentActiveCard;
-        CustomGameEvents.GetInstance().OnShuffleStart += PausePlayingWhileShuffling;
+        CustomGameEvents.GetInstance().OnActiveCardChanged += SetCurrentActiveCard;
+        CustomGameEvents.GetInstance().OnShuffleStart += PausePlaying;
         CustomGameEvents.GetInstance().OnShuffleEnd += ResumePlaying;
 
         _wildChangePanel.SetActive(false);
@@ -141,7 +146,7 @@ public class GameManager : MonoBehaviour
         ActivePlayer = 0;
         _totalCardsToGive = _players.Length * _cardsToDistribute;
         _totalCardsGiven = 0;
-        _isGamePaused = false;
+        _isGamePaused = true;
         StartCoroutine(DistributeCards());
     }
 
@@ -173,6 +178,7 @@ public class GameManager : MonoBehaviour
 
         if(_totalCardsGiven == _totalCardsToGive)
         {
+            _isGamePaused = false;
             CustomGameEvents.GetInstance().DistributeCardsEnded();
         }
         else
@@ -186,18 +192,16 @@ public class GameManager : MonoBehaviour
         StopCoroutine(DistributeCards());
         ActivePlayer = Random.Range(0, 4) ;
         _arrows[ActivePlayer].SetActive(true);
+        
         CustomGameEvents.GetInstance().TurnStart(ActivePlayer);
     }
      
-    private void GetCurrentActiveCard(Card card)
+    private void SetCurrentActiveCard(Card card)
     {
-        if (!_isGamePaused)
-        {
-            _activeCard = card;
-        }
+        ActiveCard = card;
     }
 
-    private void PausePlayingWhileShuffling()
+    private void PausePlaying()
     {
         _isGamePaused = true;
 
@@ -219,19 +223,14 @@ public class GameManager : MonoBehaviour
     private void ResumePlaying()
     {
         _isGamePaused = false;
-        CustomGameEvents.GetInstance().ActiveCardChanged(_activeCard);
-    }
-    private void ResumePlaying(Card card)
-    {
-        _isGamePaused = false;
-        CustomGameEvents.GetInstance().ActiveCardChanged(card);
+        CustomGameEvents.GetInstance().ActiveCardChanged(ActiveCard);
     }
 
-    private  void EndTurn()
+    private void EndTurn()
     {
-        CustomGameEvents.GetInstance().TurnEnd();
         DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
         CustomGameEvents.GetInstance().TurnStart(ActivePlayer);
+        CustomGameEvents.GetInstance().ActiveCardChanged(ActiveCard);
         _turnBeginTimeMarker = Time.time;
     }
 
@@ -256,7 +255,7 @@ public class GameManager : MonoBehaviour
         _arrows[nextPlayer].SetActive(true);
         ActivePlayer = nextPlayer;
     }
-    public int DetermineNextActivePlayer()
+    public int GetNextActivePlayer()
     {
         int nextPlayer = 0;
         switch (CurrentTurnType)
@@ -278,6 +277,8 @@ public class GameManager : MonoBehaviour
 
     private void ProcessCardEffects(Card cardPlayed, int playerIndex) //This method will be used to process the effects of every played card. It is called though a CustomGameEvent
     {
+        ActiveCard = cardPlayed;
+
         switch (cardPlayed._cardValue)
         {
             //Number cards go from 0 to 9 --> we don't do anything special for those
@@ -314,28 +315,35 @@ public class GameManager : MonoBehaviour
 
             case 10 : //"invert turn"
                 InvertTurnType();
-                EndTurn();
+                Invoke(nameof(EndTurn), _effectsAnimationDuration);
                 break;
 
             case 11: //"skip next" --> we call DetermineNextActivePlayer once here, then another time after the switch 
                 DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
-                EndTurn();
+                Invoke(nameof(EndTurn), _effectsAnimationDuration);
                 break;
 
             case 12: //"skip next" + "draw 2"
                 DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
-                _players[ActivePlayer].TryDrawCard(2);
-                EndTurn();
+                if (!_players[ActivePlayer].TryDrawCard(2))
+                {
+                    _players[ActivePlayer].TryDrawCard(2);
+                }
+                Invoke(nameof(EndTurn), _effectsAnimationDuration);
                 break;
 
             case 13: //"color change"
-                ChooseActiveColor(playerIndex); //--> will call TurnEnd() by itself so we don't use it here
+                ChooseActiveColor(playerIndex); //EndTurn() will be called AFTER the color has been chosen, directly in the WildChange() method, called by ChooseActiveColor()
                 break;
 
-            case 14: //"skip next" + "draw 4" + "color change"
+            case 14: //"color change" + "skip next" + "draw 4"
+                ChooseActiveColor(playerIndex);  //EndTurn() will be called AFTER the color has been chosen, directly in the WildChange() method, called by ChooseActiveColor()
+                
                 DetermineNextActivePlayer(ActivePlayer, CurrentTurnType);
-                _players[ActivePlayer].TryDrawCard(4);
-                ChooseActiveColor(playerIndex);
+                if (!_players[ActivePlayer].TryDrawCard(4))
+                {
+                    _players[ActivePlayer].TryDrawCard(4);
+                }
                 break;
 
             default:
@@ -349,25 +357,33 @@ public class GameManager : MonoBehaviour
         if(playerIndex == _mainPlayerIndex)
         {
             _wildChangePanel.SetActive(true);
-            PausePlayingWhileShuffling();
+            PausePlaying();
             return;
         }
-        int chosenColor = _players[playerIndex].GetComponent<PlayerBrain>().MostInterestingColor();
+
+        bool isAI = _players[playerIndex].TryGetComponent<PlayerBrain>(out PlayerBrain playerBrain);
+        int chosenColor = 0;
+        if (isAI)
+        {
+            chosenColor = playerBrain.MostInterestingColor();
+        }
         foreach(Card card in _colorChangeDeckList.cards)
         {
             if((int)card._cardColor == chosenColor)
             {
                 WildChange(card);
-                return;
+                break;
             }
         }
     }
 
     public void WildChange(Card card) //This method will be called upon clicking on a color after ChooseActiveColor
     {
-        ResumePlaying(card);
+        ResumePlaying();
+        ActiveCard = card;
+        CustomGameEvents.GetInstance().ActiveCardChanged(ActiveCard);
         _wildChangePanel.SetActive(false);
-        EndTurn();
+        Invoke(nameof(EndTurn), _effectsAnimationDuration);
     }
 
     private void InvertTurnType()
@@ -391,8 +407,8 @@ public class GameManager : MonoBehaviour
         CustomGameEvents.GetInstance().OnFirstShuffleEnded -= PrepareFirstTurn;
         CustomGameEvents.GetInstance().OnCardPlayed -= ProcessCardEffects;
         CustomGameEvents.GetInstance().OnPlayerHasSkipped -= EndTurn;
-        CustomGameEvents.GetInstance().OnActiveCardChanged += GetCurrentActiveCard;
-        CustomGameEvents.GetInstance().OnShuffleStart -= PausePlayingWhileShuffling;
+        CustomGameEvents.GetInstance().OnActiveCardChanged += SetCurrentActiveCard;
+        CustomGameEvents.GetInstance().OnShuffleStart -= PausePlaying;
         CustomGameEvents.GetInstance().OnShuffleEnd -= ResumePlaying;
     }
 }
