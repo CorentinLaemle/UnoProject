@@ -34,19 +34,19 @@ public class PlayerBrain : HandManager
         _playableCards = new CardBehaviour[0];
         _playablePriorities = new float[0];
 
-        _playerPriorities = new float[GameManager.GetInstance()._players.Length];
+        _playerPriorities = new float[UnoGameMaster.GetInstance()._players.Length];
         _colorPriorities = new int[_brainSettings.Colours];
         _valuesPriorities = new int[_brainSettings.MaxCardValue];
         _cardNumberPerColor = new int[0];
 
-        _reactionTime = GameManager.GetInstance().AIReactionTime;
+        _reactionTime = UnoGameMaster.GetInstance().AIReactionTime;
     }
 
     private void PrepareThinkThinkThink(int playerIndex)
     {
         if (playerIndex == _myPlayerIndex)
         {
-            _nextPlayer = GameManager.GetInstance().GetNextActivePlayer();
+            _nextPlayer = UnoGameMaster.GetInstance().GetNextActivePlayer();
             Invoke(nameof(ThinkThinkThink), _reactionTime);
         }
     }
@@ -150,7 +150,7 @@ public class PlayerBrain : HandManager
 
     private void UpdatePlayerPriorities(Card cardPlayed, int playerIndex)
     {
-        int nextPlayer = GameManager.GetInstance().GetNextActivePlayer();
+        int nextPlayer = UnoGameMaster.GetInstance().GetNextActivePlayer();
 
         if (nextPlayer == _myPlayerIndex && _brainSettings.IsVengeful) //Builds-up a thrist for vengeance against those who have wronged this player
         {
