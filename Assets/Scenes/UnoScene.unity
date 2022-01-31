@@ -189,7 +189,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 75853568}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -219,6 +219,8 @@ MonoBehaviour:
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
+  _alpha: -0.1
+  _delta: 0.25
 --- !u!114 &75853572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -354,7 +356,7 @@ MonoBehaviour:
   - {fileID: 309408158}
   - {fileID: 1755771328}
   - {fileID: 342741294}
-  _cardsToDistribute: 2
+  _cardsToDistribute: 7
   _colorChangeDeckList: {fileID: 11400000, guid: 9f0827ab38c2f17439cb4571f4df0c28, type: 2}
   _activePlayer: 0
   _currentTurnType: 0
@@ -493,6 +495,8 @@ MonoBehaviour:
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
+  _alpha: -0.1
+  _delta: 0.25
 --- !u!114 &264634508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1757,6 +1761,8 @@ MonoBehaviour:
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
+  _alpha: -0.1
+  _delta: 0.25
 --- !u!114 &876685595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2177,6 +2183,8 @@ MonoBehaviour:
   _isLeftHandedMode: 0
   _startCardsInterval: 20
   _spaceDecrementStep: 20
+  _alpha: -0.1
+  _delta: 0.25
 --- !u!1 &1450120421
 GameObject:
   m_ObjectHideFlags: 0
