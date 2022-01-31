@@ -14,7 +14,6 @@ public class CardBehaviour : MonoBehaviour
 
     private HandAutoLayout _myHandAutoLayout;
     private HandManager _myHandManager;
-    private RectTransform _myRectTransform;
     private bool _isCardInHand;
     private bool _isPlayerMainHand;
     private int _myPlayerIndex;
@@ -28,7 +27,6 @@ public class CardBehaviour : MonoBehaviour
             _isPlayerMainHand = _myHandManager.IsMainPlayerHand;
             _myPlayerIndex = _myHandManager.MyPlayerIndex;
             _myHandAutoLayout = transform.parent.GetComponent<HandAutoLayout>();
-            _myRectTransform = gameObject.GetComponent<RectTransform>();
         }
         _myButton = gameObject.GetComponent<Button>();
     }
@@ -40,7 +38,7 @@ public class CardBehaviour : MonoBehaviour
         _myCardOutline.enabled = false;
         _myButton.interactable = false;
 
-        UpdateActiveCard(GameManager.GetInstance().ActiveCard);
+        UpdateActiveCard(UnoGameMaster.GetInstance().ActiveCard);
     }
 
     private void UpdateActiveCard(Card card)
@@ -56,7 +54,7 @@ public class CardBehaviour : MonoBehaviour
         _myButton.interactable = false;
         _myCardOutline.enabled = false;
 
-        if (_isPlayerMainHand && GameManager.GetInstance().ActivePlayer == _myPlayerIndex)
+        if (_isPlayerMainHand && UnoGameMaster.GetInstance().ActivePlayer == _myPlayerIndex)
         {
             _myButton.interactable = _isPlayable;
             _myCardOutline.enabled = _isPlayable;
@@ -66,17 +64,17 @@ public class CardBehaviour : MonoBehaviour
     //This method is called when a card is clicked on
     public void ClickOnCard()
     {
-        if (_isCardInHand && GameManager.GetInstance().ActivePlayer == _myPlayerIndex)
+        if (_isCardInHand && UnoGameMaster.GetInstance().ActivePlayer == _myPlayerIndex)
         {
             IHaveBeenPlayed(_myCard);
         }
     }
 
-    private void IHaveBeenPlayed(Card card)
+    private void IHaveBeenPlayed(Card card) 
     {
-        for(int i = 0; i < _myHandAutoLayout._cardsRectTransformList.Count; i++)
+        for(int i = 0; i < _myHandManager._cardsInHand.Count; i++)
         {
-            if(_myHandAutoLayout._cardsRectTransformList[i] == _myRectTransform)
+            if(_myHandManager._cardsInHand[i] == this)
             {
                 _myHandAutoLayout._cardsRectTransformList.RemoveAt(i);
                 _myHandManager._cardsInHand.RemoveAt(i);
