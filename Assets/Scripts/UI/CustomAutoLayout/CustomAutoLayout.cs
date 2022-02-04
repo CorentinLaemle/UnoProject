@@ -11,6 +11,9 @@ public class CustomAutoLayout : MonoBehaviour
 
     protected RectTransform _rectTransform;
     protected RectTransform _cardRectTransform;
+
+    protected int _cardHeight;
+    protected int _cardWidth;
     protected int _cardsNumber;
 
     protected virtual void Awake()
@@ -18,5 +21,8 @@ public class CustomAutoLayout : MonoBehaviour
         _rectTransform = gameObject.GetComponent<RectTransform>();
         _cardRectTransform = _cardPrefab.GetComponent<RectTransform>();
         _cardsRectTransformList = new List<RectTransform>();
+
+        _cardHeight = (int)_cardRectTransform.rect.height;
+        _cardWidth = (int)_cardRectTransform.rect.width;
     }
 }

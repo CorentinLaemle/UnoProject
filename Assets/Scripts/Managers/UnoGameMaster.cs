@@ -11,7 +11,7 @@ public class UnoGameMaster : GameMaster
     public override Card ActiveCard => base.ActiveCard;
     public override int ActivePlayer => base.ActivePlayer;
     public override TurnType CurrentTurnType => base.CurrentTurnType;
-
+    public override int MainPlayerIndex { get => base.MainPlayerIndex; protected set => base.MainPlayerIndex = value; }
 
     public static UnoGameMaster GetInstance()
     {
@@ -208,10 +208,11 @@ public class UnoGameMaster : GameMaster
 
     private void ChooseActiveColor(int playerIndex)
     {
-        if (playerIndex == _mainPlayerIndex)
+        PausePlaying();
+
+        if (playerIndex == MainPlayerIndex)
         {
             _wildChangePanel.SetActive(true);
-            PausePlaying();
             return;
         }
 
@@ -221,11 +222,11 @@ public class UnoGameMaster : GameMaster
         {
             chosenColor = playerBrain.MostInterestingColor();
         }
-        foreach (Card card in _colorChangeDeckList.cards)
+        for(int i = 0; i < _colorChangeDeckList.cards.Count; i++)
         {
-            if ((int)card._cardColor == chosenColor)
+            if ((int)_colorChangeDeckList.cards[i]._cardColor == chosenColor)
             {
-                WildChange(card);
+                WildChange(_colorChangeDeckList.cards[i]);
                 break;
             }
         }
@@ -233,9 +234,8 @@ public class UnoGameMaster : GameMaster
 
     public void WildChange(Card card) //This method will be called upon clicking on a color after ChooseActiveColor
     {
-        ResumePlaying();
         ActiveCard = card;
-        CustomGameEvents.GetInstance().ActiveCardChanged(ActiveCard);
+        ResumePlaying();
         _wildChangePanel.SetActive(false);
         Invoke(nameof(EndTurn), _effectsAnimationDuration);
     }

@@ -6,6 +6,8 @@ using UnityEngine;
 public class DiscardAutoLayout : CustomAutoLayout
 {
     [SerializeField] private bool _isCardsRotationOn;
+    [SerializeField][Range(0.1f, 1f)] private float _cardEnlargerFactor;
+
     private DiscardManager _myDiscardManager;
 
     protected override void Awake()
@@ -20,8 +22,6 @@ public class DiscardAutoLayout : CustomAutoLayout
 
         int lastPlayedCardIndex = _cardsRectTransformList.Count - 1;
         float rotationDelta = Random.Range(-15, 15);
-
-        _cardsRectTransformList[lastPlayedCardIndex].localPosition = Vector3.zero;
 
         //todo : en plus de changer l'orientation, pk pas poser la carte dans un cercle de rayon définissable
         if (_isCardsRotationOn)

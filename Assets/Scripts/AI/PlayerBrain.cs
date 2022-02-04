@@ -132,12 +132,12 @@ public class PlayerBrain : HandManager
         int bestColorIndex = 0;
         int mostCardInAColor = 0;
 
-        foreach(int colorIndex in _cardNumberPerColor)
+        for(int i  = 0; i < _cardNumberPerColor.Length; i++)
         {
-            if(_cardNumberPerColor[colorIndex] > mostCardInAColor)
+            if(_cardNumberPerColor[i] > mostCardInAColor)
             {
-                bestColorIndex = colorIndex;
-                mostCardInAColor = _cardNumberPerColor[colorIndex];
+                bestColorIndex = i;
+                mostCardInAColor = _cardNumberPerColor[i];
             }
         }
         return bestColorIndex;

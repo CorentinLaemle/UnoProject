@@ -110,6 +110,8 @@ public class HandManager : MonoBehaviour
 
     private void DrawCards(int cardNumber)
     {
+        int cardIndex = 0;
+
         for (int i = 0; i < cardNumber; i++)
         {
             GameObject newCard = Instantiate(_cardPrefab, transform);
@@ -122,12 +124,53 @@ public class HandManager : MonoBehaviour
             newCardDisplay._card = card;
             newCardDisplay._isCardVisible = IsMainPlayerHand;
 
-            _cardsInHand.Add(newCardBehaviour);
+            cardIndex = InsertCardInHand(newCardBehaviour);
+            newCard.transform.SetSiblingIndex(cardIndex);
 
             //Populates the _rectTransformList with the corresponding components from the cards contained in the _cardsInHand list
-            _handAutoLayout._cardsRectTransformList.Add(newCard.GetComponent<RectTransform>());
+            if(_handAutoLayout._cardsRectTransformList.Count < cardIndex)
+            {
+                _handAutoLayout._cardsRectTransformList.Add(newCard.GetComponent<RectTransform>());
+                _handAutoLayout.RepositionCardsInHand();
+                return;
+            }
+            _handAutoLayout._cardsRectTransformList.Insert(cardIndex, newCard.GetComponent<RectTransform>());
             _handAutoLayout.RepositionCardsInHand();
         }
+    }
+
+    private int InsertCardInHand(CardBehaviour cardBehaviour)
+    {
+        int index = 0;
+        bool isIndexFound = false;
+
+        for (int i = 0; i < _cardsInHand.Count; i++)
+        {
+            if (_cardsInHand[i]._myCard._cardColor == cardBehaviour._myCard._cardColor)
+            {
+                if (_cardsInHand[i]._myCard._cardValue >= cardBehaviour._myCard._cardValue)
+                {
+                    index = i;
+                    isIndexFound = true;
+                    break;
+                }
+            }
+            if((int)_cardsInHand[i]._myCard._cardColor > (int)cardBehaviour._myCard._cardColor)
+            {
+                index = i;
+                isIndexFound = true;
+                break;
+            }
+            index = i;
+        }
+
+        if (isIndexFound)
+        {
+            _cardsInHand.Insert(index, cardBehaviour);
+            return index;
+        }
+        _cardsInHand.Add(cardBehaviour);
+        return index+1;
     }
 
     //on joue une carte en deux étapes : tout d'abord, en cliquant sur une carte on lance l'event OnCardSelected, qui est écouté par PlayCard
