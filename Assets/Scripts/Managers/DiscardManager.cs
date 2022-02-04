@@ -49,7 +49,9 @@ public class DiscardManager : MonoBehaviour
     {
         GameObject newCard = Instantiate(_cardPrefab, transform);
         Card card = DeckManager.GetInstance().DrawOneCard();
-        newCard.GetComponent<CardBehaviour>()._myCard = card;
+
+        CardBehaviour cardBehaviour = newCard.GetComponent<CardBehaviour>();
+        cardBehaviour.enabled = false;
 
         CardDisplay cardDisplay = newCard.GetComponent<CardDisplay>();
         cardDisplay._card = card;
@@ -66,9 +68,11 @@ public class DiscardManager : MonoBehaviour
     private void DiscardCard(Card card, int playerIndex)
     {
         GameObject newCard = Instantiate(_cardPrefab, transform);
+        
+        CardBehaviour cardBehaviour = newCard.GetComponent<CardBehaviour>();
+        cardBehaviour.enabled = false;
 
         CardDisplay cardDisplay = newCard.GetComponent<CardDisplay>();
-        newCard.GetComponent<CardBehaviour>()._myCard = card;
         cardDisplay._card = card;
         cardDisplay._isCardVisible = true;
 

@@ -33,28 +33,28 @@ public class CardBehaviour : MonoBehaviour
 
     private void Start()
     {
-        CustomGameEvents.GetInstance().OnActiveCardChanged += UpdateActiveCard;
+        CustomGameEvents.GetInstance().OnTurnStart += UpdateActiveCard;
 
         _myCardOutline.enabled = false;
         _myButton.interactable = false;
 
-        UpdateActiveCard(UnoGameMaster.GetInstance().ActiveCard);
+        UpdateActiveCard(UnoGameMaster.GetInstance().ActivePlayer);
     }
 
-    private void UpdateActiveCard(Card card)
+    private void UpdateActiveCard(int playerIndex)
     {
-        _currentActiveCard = card;
-        
+        _currentActiveCard = UnoGameMaster.GetInstance().ActiveCard;
+
         _isPlayable =
-            _myCard._cardColor == Card.CardColor.black ||
-            _myCard._cardColor == _currentActiveCard._cardColor  ||
-            _myCard._cardValue == _currentActiveCard._cardValue ||
-            _currentActiveCard._cardColor == Card.CardColor.black;
+        _myCard._cardColor == Card.CardColor.black ||
+        _myCard._cardColor == _currentActiveCard._cardColor  ||
+        _myCard._cardValue == _currentActiveCard._cardValue ||
+        _currentActiveCard._cardColor == Card.CardColor.black;
 
         _myButton.interactable = false;
         _myCardOutline.enabled = false;
 
-        if (_isPlayerMainHand && UnoGameMaster.GetInstance().ActivePlayer == _myPlayerIndex)
+        if (_isPlayerMainHand && playerIndex == _myPlayerIndex)
         {
             _myButton.interactable = _isPlayable;
             _myCardOutline.enabled = _isPlayable;
@@ -87,6 +87,6 @@ public class CardBehaviour : MonoBehaviour
 
     private void OnDestroy()
     {
-        CustomGameEvents.GetInstance().OnActiveCardChanged -= UpdateActiveCard;
+        CustomGameEvents.GetInstance().OnTurnStart -= UpdateActiveCard;
     }
 }

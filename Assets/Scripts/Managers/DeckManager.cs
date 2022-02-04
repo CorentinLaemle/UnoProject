@@ -134,8 +134,11 @@ public class DeckManager : MonoBehaviour
 
     private void ActivateButton()
     {
-        _myOutline.SetActive(true);
-        _myButton.interactable = true;
+        if(UnoGameMaster.GetInstance().ActivePlayer == UnoGameMaster.GetInstance().MainPlayerIndex)
+        {
+            _myOutline.SetActive(true);
+            _myButton.interactable = true;
+        }
     }
 
     private void OnDestroy()

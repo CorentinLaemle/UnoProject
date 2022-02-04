@@ -14,14 +14,15 @@ public class HandAutoLayout : CustomAutoLayout
     }
     [SerializeField] private CustomLayoutType _myLayoutType;
     [SerializeField] private bool _isLeftHandedMode;
-    [SerializeField] private int _startCardsInterval;
-    [SerializeField] private int _spaceDecrementStep;
-    [SerializeField][Range(-1,1)] private float _alpha;
-    [SerializeField][Range(0,1)] private float _delta;
-    [SerializeField] private float _maxCardRotation;
+    [SerializeField] private int _defaultPixelsBetweenCards;
+    [SerializeField] private int _cardsGapDecrementStep;
+    [SerializeField][Range(-1,1)] private float _fanCenterGap;
+    [SerializeField][Range(0,1)] private float _fanCurveIntensity;
+    [SerializeField] private float _cardRotPerCardInHand;
 
-    private int _trueAlpha;
-    private int _trueDelta;
+    private float _trueFanGap;
+    private float _trueFanCurve;
+
     private HandManager _myHandManager;
 
     protected override void Awake()
@@ -32,8 +33,8 @@ public class HandAutoLayout : CustomAutoLayout
 
     private void Start()
     {
-        _trueAlpha = (int) (_alpha * _cardPrefab.GetComponent<RectTransform>().rect.height);
-        _trueDelta = (int) (_delta * _cardPrefab.GetComponent<RectTransform>().rect.width);
+        _trueFanGap = _fanCenterGap * _cardHeight;
+        _trueFanCurve = _fanCurveIntensity * _cardWidth;
     }
 
     //This method is called by the corresponding HandManager whenever it draws a card
@@ -70,6 +71,7 @@ public class HandAutoLayout : CustomAutoLayout
         float rotX = 0f;
         float rotY = 0f;
         float rotZ = 0f;
+        int correctZ = _cardHeight / 2; //since the cards are tilted towards the screen, we need to move them away from their hand area
 
         //This line opens the possibility of changing the way cards appear in the hand. 
         //If _isLeftHandedMode is false (default), the last drawn card will be placed on the rigth of the hand.
@@ -84,21 +86,29 @@ public class HandAutoLayout : CustomAutoLayout
 
         int cardsInHand = _cardsNumber;
         //we only want to space out our cards if there is more than one card to space out
-        int spaceBetweenCards = (cardsInHand > 1) ? _startCardsInterval : 0;
-        //since we rotate each card to be facing the center of the screen, we'll always use the card width to determine the space taken by one card 
-        int cardWidth = (int)_cardRectTransform.rect.width;
+        int spaceBetweenCards = (cardsInHand > 1) ? _defaultPixelsBetweenCards : 0;
 
+        //since we rotate each card to be facing the center of the screen, we'll always use the card width to determine the space taken by one card 
         //determines if we can place all the cards in hand using the current spaceBetweenCards parameter
-        bool isEnoughSpace = handAreaSize > cardWidth * cardsInHand;
+        int bufferArea = cardsInHand * _cardWidth + (cardsInHand - 1) * spaceBetweenCards;
+        
+        bool isEnoughSpace = handAreaSize >= bufferArea;
+        if (isEnoughSpace)
+        {
+            handAreaSize = bufferArea;
+        }
 
         if (!isEnoughSpace)
         {
             while (!isEnoughSpace)
             {
                 //if not, recalculates by decrementing spaceBetweenCards
-                spaceBetweenCards -= _spaceDecrementStep;
-                isEnoughSpace = handAreaSize > (cardWidth + spaceBetweenCards) * cardsInHand;
+                spaceBetweenCards -= _cardsGapDecrementStep;
+                bufferArea = cardsInHand * _cardWidth + (cardsInHand - 1) * spaceBetweenCards;
+
+                isEnoughSpace = handAreaSize > bufferArea;
             }
+            handAreaSize = bufferArea;
         }
 
         //once we corrected the spaceBetween cards parameter so all cards in hand can visually fit inside of the hand area, we place them
@@ -106,27 +116,20 @@ public class HandAutoLayout : CustomAutoLayout
         {
             for (int i = 0; i < cardsInHand; i++)
             {
-                int correctX = (handAreaSize / (cardsInHand + 1)) * (i + 1) - handAreaSize / 2;
-                if (correctX == 0) //We add this line in order to avoid errors when recognizing cards in the hand when played. Should be invisible by eye
-                {
-                    correctX = 1;
-                }
+                int correctX = handAreaSize / (cardsInHand + 1) * (i + 1) - handAreaSize / 2;
                 correctX *= (int)nextCardIncrement.x;
 
-                float beta = Mathf.PI * i/ (cardsInHand -1);
-                int correctY = (int)(_trueAlpha + Mathf.Sin(beta) * _trueDelta);
+                float beta = cardsInHand > 1 ? Mathf.PI * i/(cardsInHand-1) : Mathf.PI; //if there's only one card in had it's placed in the middle, otherwise they are placed following a sine curve
+                int correctY = (int)(_trueFanGap + Mathf.Sin(beta) * _trueFanCurve);
 
-                if(nextCardIncrement == Vector2.left) //todo : reprendre avec une variable + un calcul de la rotation en fonction du nombre de cartes en main
-                {
-                    rotX = -90;
-                }
-                _maxCardRotation = 5 * (cardsInHand-1) / 2;
-                rotZ = (int)_maxCardRotation * nextCardIncrement.x - 2*_maxCardRotation * i/cardsInHand * nextCardIncrement.x;
+                rotX = -55; //value obtained through testing
+                float maxCardRotation = _cardRotPerCardInHand * (cardsInHand-1) / 2;
+                rotZ = (int)maxCardRotation * nextCardIncrement.x - 2*maxCardRotation * i/cardsInHand * nextCardIncrement.x;
                 Vector3 correctRotation = new Vector3(cardRotation.x + rotX, cardRotation.y + rotY, cardRotation.z + rotZ);
 
                 _cardsRectTransformList[i].anchorMin = anchors;
                 _cardsRectTransformList[i].anchorMax = anchors;
-                _cardsRectTransformList[i].localPosition = new Vector3(correctX, correctY);
+                _cardsRectTransformList[i].localPosition = new Vector3(correctX, correctY, -correctZ);
                 _cardsRectTransformList[i].rotation = Quaternion.Euler(correctRotation);
             }
             return;
@@ -134,19 +137,20 @@ public class HandAutoLayout : CustomAutoLayout
         for (int i = 0; i < cardsInHand; i++) //for the left and right players
         {
             int correctY = (handAreaSize / (cardsInHand + 1)) * (i + 1) - handAreaSize / 2;
-            if (correctY == 0)
-            {
-                correctY = 1;
-            }
-            correctY *= (int)nextCardIncrement.y;
+            correctY *= (int)-nextCardIncrement.y;
 
-            float beta = Mathf.PI * i/ (cardsInHand - 1);
-            int correctX = (int)(_trueAlpha + Mathf.Sin(beta) * _trueDelta * -nextCardIncrement.y);
+            float beta = cardsInHand > 1 ? Mathf.PI * i / (cardsInHand - 1) : Mathf.PI;
+            int correctX = (int)(_trueFanGap + Mathf.Sin(beta) * _trueFanCurve * nextCardIncrement.y);
+
+            rotY = 90 * (int)nextCardIncrement.y;
+            float maxCardRotation = _cardRotPerCardInHand * (cardsInHand - 1) / 2;
+            rotX = (int)maxCardRotation * nextCardIncrement.x - 2 * maxCardRotation * i / cardsInHand * nextCardIncrement.x;
+            Vector3 correctRotation = new Vector3(cardRotation.x + rotX, cardRotation.y + rotY, cardRotation.z + rotZ);
 
             _cardsRectTransformList[i].anchorMin = anchors;
             _cardsRectTransformList[i].anchorMax = anchors;
-            _cardsRectTransformList[i].localPosition = new Vector3(correctX, correctY);
-            _cardsRectTransformList[i].rotation = Quaternion.Euler(cardRotation);
+            _cardsRectTransformList[i].localPosition = new Vector3(correctX, correctY, -correctZ);
+            _cardsRectTransformList[i].rotation = Quaternion.Euler(correctRotation);
         }
     }
 }

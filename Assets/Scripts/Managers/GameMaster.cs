@@ -89,6 +89,18 @@ public class GameMaster : MonoBehaviour
             return _aIReactionTime;
         }
     }
+    public virtual int MainPlayerIndex
+    {
+        get
+        {
+            return _mainPlayerIndex;
+        }
+        protected set
+        {
+            _mainPlayerIndex = value;
+        }
+    }
+
     protected virtual void Awake()
     {
     }
@@ -122,7 +134,7 @@ public class GameMaster : MonoBehaviour
         {
             if (player.IsMainPlayerHand)
             {
-                _mainPlayerIndex = player.MyPlayerIndex;
+                MainPlayerIndex = player.MyPlayerIndex;
                 return;
             }
         }
@@ -130,7 +142,7 @@ public class GameMaster : MonoBehaviour
 
     protected void PrepareFirstTurn() //Gets called once at the start of the game, after the deck has finished shuffling
     {
-        ActivePlayer = 0;
+        ActivePlayer = 1;
         _totalCardsToGive = _players.Length * _cardsToDistribute;
         _totalCardsGiven = 0;
         _isGamePaused = true;
