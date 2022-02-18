@@ -11,6 +11,7 @@ public class DeckManager : MonoBehaviour
     [SerializeField] private DeckList _unoDeckList;
     [SerializeField] private DiscardManager _discardManager;
     [SerializeField] private GameObject _myOutline;
+    [SerializeField] private AudioSource _source;
 
     [SerializeField] private List<Card> _cardsList; //This is the actual in-game list of cards actually in the deck
     private List<Card> _bufferDeckList;             //This list is used as an intermediary list when shuffling the deck ; it should be empty at all times except when shuffling
@@ -38,8 +39,10 @@ public class DeckManager : MonoBehaviour
     {
         CustomGameEvents.GetInstance().OnPlayerMustDraw += ActivateButton;
 
+        AudioManager.GetInstance().SetAudioSource(_source, "SHUFFLE");
+
         _myOutline.SetActive(false);
-        PrepareDeck(); //This should be the only method from a manager script called on Start(), the rest follow the order imposed by the calling of custom game events
+        PrepareDeck(); //This should be the only method related to cards business called on Start() from a manager script
     }
 
     private void PrepareDeck() //This method is called at the start of the game.
@@ -52,7 +55,8 @@ public class DeckManager : MonoBehaviour
         {
             _bufferDeckList.Add(_unoDeckList.cards[i]);
         }
-        InitShuffle();
+        PlaySound();
+        Invoke(nameof(InitShuffle), _source.clip.length);
     }
 
     private void InitShuffle()
@@ -83,6 +87,7 @@ public class DeckManager : MonoBehaviour
             }
         }
         _deckCardsAmount = _bufferDeckList.Count;
+
         Shuffle(_isFirstShuffle);
         _isFirstShuffle = false;
     }
@@ -141,6 +146,11 @@ public class DeckManager : MonoBehaviour
         }
     }
 
+    private void PlaySound()
+    {
+        AudioManager.GetInstance().PlayPitchedSound(_source);
+    }
+    
     private void OnDestroy()
     {
         CustomGameEvents.GetInstance().OnPlayerMustDraw -= ActivateButton;

@@ -13,17 +13,20 @@ public class HandAutoLayout : CustomAutoLayout
         right,
     }
     [SerializeField] private CustomLayoutType _myLayoutType;
-    [SerializeField] private bool _isLeftHandedMode;
     [SerializeField] private int _defaultPixelsBetweenCards;
     [SerializeField] private int _cardsGapDecrementStep;
     [SerializeField][Range(-1,1)] private float _fanCenterGap;
     [SerializeField][Range(0,1)] private float _fanCurveIntensity;
     [SerializeField] private float _cardRotPerCardInHand;
+    [SerializeField] private RectTransform _zoomedInHandArea;
 
     private float _trueFanGap;
     private float _trueFanCurve;
 
     private HandManager _myHandManager;
+    private RectTransform _activeHandArea;
+
+    private bool _isExpanded;
 
     protected override void Awake()
     {
@@ -35,6 +38,22 @@ public class HandAutoLayout : CustomAutoLayout
     {
         _trueFanGap = _fanCenterGap * _cardHeight;
         _trueFanCurve = _fanCurveIntensity * _cardWidth;
+        _activeHandArea = _rectTransform;
+        _isExpanded = false;
+    }
+
+    public void ExpandCardArea()
+    {
+        if(_isExpanded == false)
+        {
+            _isExpanded = true;
+            _activeHandArea = _zoomedInHandArea;
+            RepositionCardsInHand();
+            return;
+        }
+        _isExpanded = false;
+        _activeHandArea = _rectTransform;
+        RepositionCardsInHand();
     }
 
     //This method is called by the corresponding HandManager whenever it draws a card
@@ -71,17 +90,13 @@ public class HandAutoLayout : CustomAutoLayout
         float rotX = 0f;
         float rotY = 0f;
         float rotZ = 0f;
-        int correctZ = _cardHeight / 2; //since the cards are tilted towards the screen, we need to move them away from their hand area
-
-        //This line opens the possibility of changing the way cards appear in the hand. 
-        //If _isLeftHandedMode is false (default), the last drawn card will be placed on the rigth of the hand.
-        nextCardIncrement *= _isLeftHandedMode ? -1 : 1;
+        int correctZ = _cardHeight / 2; //since the cards are tilted towards the screen, we need to move them away from their hand area in order to avoid clipping
 
         //calculates the rought number of pixels we have at our disposal to place all the cards. We cast as an int since anchors may have float values.
-        int handAreaSize = (int)(Screen.height * (_rectTransform.anchorMax.y - _rectTransform.anchorMin.y));
+        int handAreaSize = (int)(Screen.height * (_activeHandArea.anchorMax.y - _activeHandArea.anchorMin.y));
         if (nextCardIncrement == Vector2.left || nextCardIncrement == Vector2.right)
         {
-            handAreaSize = (int)(Screen.width * (_rectTransform.anchorMax.x - _rectTransform.anchorMin.x));
+            handAreaSize = (int)(Screen.width * (_activeHandArea.anchorMax.x - _activeHandArea.anchorMin.x));
         }
 
         int cardsInHand = _cardsNumber;
@@ -120,7 +135,7 @@ public class HandAutoLayout : CustomAutoLayout
                 correctX *= (int)nextCardIncrement.x;
 
                 float beta = cardsInHand > 1 ? Mathf.PI * i/(cardsInHand-1) : Mathf.PI; //if there's only one card in had it's placed in the middle, otherwise they are placed following a sine curve
-                int correctY = (int)(_trueFanGap + Mathf.Sin(beta) * _trueFanCurve);
+                int correctY =  (int)(_trueFanGap + Mathf.Sin(beta) * _trueFanCurve);
 
                 rotX = -55; //value obtained through testing
                 float maxCardRotation = _cardRotPerCardInHand * (cardsInHand-1) / 2;

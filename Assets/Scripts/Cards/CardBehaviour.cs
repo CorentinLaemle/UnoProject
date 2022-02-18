@@ -20,13 +20,13 @@ public class CardBehaviour : MonoBehaviour
 
     private void Awake()
     {
-        _isCardInHand = transform.parent.TryGetComponent(out HandManager handManager);
+        _isCardInHand = transform.parent.parent.TryGetComponent(out HandManager handManager);
         if (_isCardInHand)
         {
             _myHandManager = handManager;
             _isPlayerMainHand = _myHandManager.IsMainPlayerHand;
             _myPlayerIndex = _myHandManager.MyPlayerIndex;
-            _myHandAutoLayout = transform.parent.GetComponent<HandAutoLayout>();
+            _myHandAutoLayout = transform.parent.parent.GetComponent<HandAutoLayout>();
         }
         _myButton = gameObject.GetComponent<Button>();
     }
@@ -34,10 +34,16 @@ public class CardBehaviour : MonoBehaviour
     private void Start()
     {
         CustomGameEvents.GetInstance().OnTurnStart += UpdateActiveCard;
+        CustomGameEvents.GetInstance().OnActiveCardChanged += UpdateActiveCard;
 
         _myCardOutline.enabled = false;
         _myButton.interactable = false;
 
+        UpdateActiveCard(UnoGameMaster.GetInstance().ActivePlayer);
+    }
+
+    private void UpdateActiveCard(Card card)
+    {
         UpdateActiveCard(UnoGameMaster.GetInstance().ActivePlayer);
     }
 
@@ -88,5 +94,6 @@ public class CardBehaviour : MonoBehaviour
     private void OnDestroy()
     {
         CustomGameEvents.GetInstance().OnTurnStart -= UpdateActiveCard;
+        CustomGameEvents.GetInstance().OnActiveCardChanged -= UpdateActiveCard;
     }
 }
