@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(DiscardAutoLayout))]
 public class DiscardManager : MonoBehaviour
 {
     public List<CardDisplay> _discardList;
 
     [SerializeField] private GameObject _cardPrefab;
+    [SerializeField] private AudioSource _source;
 
     private DiscardAutoLayout _discardAutoLayout;
     private static DiscardManager _instance;
@@ -30,6 +30,8 @@ public class DiscardManager : MonoBehaviour
     {
         CustomGameEvents.GetInstance().OnDistributeCardsEnded += DiscardCardFromDeck;
         CustomGameEvents.GetInstance().OnCardPlayed += DiscardCard;
+
+        AudioManager.GetInstance().SetAudioSource(_source, "PLAYCARD");
     }
 
     //This method will be called by the deck manager when shuffling ; it will remove the card's dependencies then delete the attached gameobject
@@ -61,6 +63,8 @@ public class DiscardManager : MonoBehaviour
         _discardAutoLayout._cardsRectTransformList.Add(newCard.GetComponent<RectTransform>());
         _discardAutoLayout.RepositionCardsInDiscard(0); //the parameter will dictate the orientation of the card. 0 means the card will face the player.
 
+        PlaySound();
+
         CustomGameEvents.GetInstance().ActiveCardChanged(card);
         CustomGameEvents.GetInstance().GameStart();
     }
@@ -80,7 +84,14 @@ public class DiscardManager : MonoBehaviour
         _discardAutoLayout._cardsRectTransformList.Add(newCard.GetComponent<RectTransform>());
         _discardAutoLayout.RepositionCardsInDiscard(playerIndex);
 
+        PlaySound();
+
         CustomGameEvents.GetInstance().CardPlayedAndDiscarded(card, playerIndex);
+    }
+
+    private void PlaySound()
+    {
+        AudioManager.GetInstance().PlayPitchedSound(_source);
     }
 
     private void OnDestroy()

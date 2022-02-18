@@ -21,7 +21,7 @@ public class CustomAutoLayout : MonoBehaviour
         _rectTransform = gameObject.GetComponent<RectTransform>();
         _cardRectTransform = _cardPrefab.GetComponent<RectTransform>();
         _cardsRectTransformList = new List<RectTransform>();
-
+        
         _cardHeight = (int)_cardRectTransform.rect.height;
         _cardWidth = (int)_cardRectTransform.rect.width;
     }

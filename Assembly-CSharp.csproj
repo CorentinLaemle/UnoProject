@@ -57,21 +57,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Cards\Card.cs" />
+    <Compile Include="Assets\Scripts\Variables\FloatVariable.cs" />
+    <Compile Include="Assets\Scripts\Audio\AudioManager.cs" />
+    <Compile Include="Assets\Scripts\Managers\GameMasters\UnoGameMaster.cs" />
     <Compile Include="Assets\Scripts\Managers\DeckManager.cs" />
     <Compile Include="Assets\Scripts\UI\CustomAutoLayout\HandAutoLayout.cs" />
-    <Compile Include="Assets\Scripts\AI\PlayerBrain.cs" />
+    <Compile Include="Assets\Scripts\Audio\SoundData.cs" />
+    <Compile Include="Assets\Scripts\PlayerHands\AI\PlayerBrain.cs" />
     <Compile Include="Assets\Scripts\Cards\DeckList.cs" />
     <Compile Include="Assets\Scripts\Cards\ColorIndex.cs" />
-    <Compile Include="Assets\Scripts\Managers\GameMaster.cs" />
+    <Compile Include="Assets\Scripts\Audio\AudioSettings.cs" />
+    <Compile Include="Assets\Scripts\Managers\GameMasters\GameMaster.cs" />
     <Compile Include="Assets\Scripts\Cards\CardBehaviour.cs" />
     <Compile Include="Assets\Scripts\Managers\DiscardManager.cs" />
     <Compile Include="Assets\Scripts\CustomGameEvents.cs" />
     <Compile Include="Assets\Scripts\Cards\CardDisplay.cs" />
-    <Compile Include="Assets\Scripts\Managers\HandManager.cs" />
+    <Compile Include="Assets\Scripts\PlayerHands\HandManager.cs" />
+    <Compile Include="Assets\Scripts\Scene management\SceneManager.cs" />
     <Compile Include="Assets\Scripts\UI\CustomAutoLayout\DiscardAutoLayout.cs" />
-    <Compile Include="Assets\Scripts\AI\BrainSettings.cs" />
+    <Compile Include="Assets\Scripts\PlayerHands\AI\BrainSettings.cs" />
     <Compile Include="Assets\Scripts\UI\CustomAutoLayout\CustomAutoLayout.cs" />
-    <Compile Include="Assets\Scripts\Managers\UnoGameMaster.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -81,6 +86,7 @@
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface.shader" />
+     <None Include="Assets\Art\Textures\Backyard - Free\Readme.txt" />
      <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
@@ -90,6 +96,7 @@
      <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
      <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
+     <None Include="Assets\Art\Textures\Hand Painted Seamless Wood Texture\Documentation\Documentation.txt" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
      <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
@@ -670,6 +677,9 @@
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>Library\ScriptAssemblies\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+      <HintPath>Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>Library\ScriptAssemblies\UnityEditor.UI.dll</HintPath>
