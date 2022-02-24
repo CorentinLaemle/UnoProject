@@ -24,18 +24,18 @@ public class CardDisplay : MonoBehaviour
     {
         if(_nextStep < Time.time)
         {
-            DisplayCard(_card, _isCardVisible);
+            DisplayCard(_isCardVisible);
             _nextStep += 1;
         }
     }
 
-    private void DisplayCard(Card myCard, bool isCardVisible)
+    private void DisplayCard(bool isCardVisible)
     {
         if (isCardVisible)
         {
-            _cardValueChild.sprite = myCard._sprite;
+            _cardValueChild.sprite = _card._sprite;
 
-            switch (myCard._cardColor)
+            switch (_card._cardColor)
             {
                 case Card.CardColor.black:
                     _cardColorChild.color = _colorIndex._cardBlack;
