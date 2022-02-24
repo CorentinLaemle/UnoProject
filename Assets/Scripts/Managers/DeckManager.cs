@@ -12,6 +12,8 @@ public class DeckManager : MonoBehaviour
     [SerializeField] private DiscardManager _discardManager;
     [SerializeField] private GameObject _myOutline;
     [SerializeField] private AudioSource _source;
+    [SerializeField] private Animator _animator;
+    [SerializeField] private AnimationClip _shuffleAnim;
 
     [SerializeField] private List<Card> _cardsList; //This is the actual in-game list of cards actually in the deck
     private List<Card> _bufferDeckList;             //This list is used as an intermediary list when shuffling the deck ; it should be empty at all times except when shuffling
@@ -55,8 +57,7 @@ public class DeckManager : MonoBehaviour
         {
             _bufferDeckList.Add(_unoDeckList.cards[i]);
         }
-        PlaySound();
-        Invoke(nameof(InitShuffle), _source.clip.length);
+        InitShuffle();
     }
 
     private void InitShuffle()
@@ -87,12 +88,23 @@ public class DeckManager : MonoBehaviour
             }
         }
         _deckCardsAmount = _bufferDeckList.Count;
-
-        Shuffle(_isFirstShuffle);
-        _isFirstShuffle = false;
+        BeginAnimation();
     }
 
-    private void Shuffle(bool isFirstShuffle)
+    private void BeginAnimation()
+    {
+        _animator.Play(_shuffleAnim.name);
+        Invoke(nameof(PlaySound), 0.3f); //the animation needs a bit of time to be ready when the sound begins
+    }
+
+    private void PlaySound()
+    {
+        AudioManager.GetInstance().PlayPitchedSound(_source);
+
+        Invoke(nameof(Shuffle), _shuffleAnim.length);
+    }
+
+    private void Shuffle()
     {
         int minRandom = 0;
         int maxRandom = _deckCardsAmount;
@@ -106,8 +118,9 @@ public class DeckManager : MonoBehaviour
             maxRandom--;
         }
 
-        if(isFirstShuffle)
-        { 
+        if(_isFirstShuffle)
+        {
+            _isFirstShuffle = false;
             CustomGameEvents.GetInstance().FirstShuffleEnded();
             return;
         }
@@ -146,10 +159,7 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-    private void PlaySound()
-    {
-        AudioManager.GetInstance().PlayPitchedSound(_source);
-    }
+
     
     private void OnDestroy()
     {
