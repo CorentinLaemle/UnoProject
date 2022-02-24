@@ -34,7 +34,7 @@ public class DeckManager : MonoBehaviour
         }
         _instance = this;
 
-        _myButton = gameObject.GetComponent<Button>();
+        _myButton = _myOutline.GetComponent<Button>();
     }
 
     private void Start()
