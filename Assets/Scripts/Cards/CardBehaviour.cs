@@ -60,7 +60,7 @@ public class CardBehaviour : MonoBehaviour
         _myButton.interactable = false;
         _myCardOutline.enabled = false;
 
-        if (_isPlayerMainHand && playerIndex == _myPlayerIndex)
+        if (_isPlayerMainHand && playerIndex == _myPlayerIndex && !_myHandManager.HasPlayedThisTurn)
         {
             _myButton.interactable = _isPlayable;
             _myCardOutline.enabled = _isPlayable;

@@ -43,8 +43,6 @@ public class UnoGameMaster : GameMaster
 
     protected override void PausePlaying()
     {
-        base.PausePlaying();
-
         if (_impossibleCard == null)
         {
             _impossibleCard = ScriptableObject.CreateInstance<Card>();
@@ -58,11 +56,12 @@ public class UnoGameMaster : GameMaster
             }
         }
         CustomGameEvents.GetInstance().ActiveCardChanged(_impossibleCard);
+        _isGamePaused = true;
     }
 
     protected override void ResumePlaying()
     {
-        base.ResumePlaying();
+        _isGamePaused = false;
         CustomGameEvents.GetInstance().ActiveCardChanged(ActiveCard);
     }
 
@@ -265,12 +264,10 @@ public class UnoGameMaster : GameMaster
 
     public override void CallEndTurn()
     {
-        base.CallEndTurn();
-    }
-
-    public override void QuitGame()
-    {
-        base.QuitGame();
+        if(_activePlayer == _mainPlayerIndex)
+        {
+            base.CallEndTurn();
+        }
     }
 
     protected override void OnDestroy()

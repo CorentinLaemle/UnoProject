@@ -11,6 +11,7 @@ public class GameMaster : MonoBehaviour
     }
 
     public HandManager[] _players;
+    
     [Range(0, 1)] public float _delayBetweenTryDraws;
     [Range(5, 20)] public float _turnTime;
 
@@ -21,7 +22,6 @@ public class GameMaster : MonoBehaviour
     [SerializeField] protected TurnType _currentTurnType;
     [SerializeField] [Range(0,3f)] protected float _aIReactionTime;
     [SerializeField] [Range(0, 3f)] protected float _effectsAnimationDuration;
-    [SerializeField] protected string _webGLOpenPageOnQuit;
 
     protected int _mainPlayerIndex;
     protected int _winnderIndex;
@@ -72,6 +72,13 @@ public class GameMaster : MonoBehaviour
             _activePlayer = value;
         }
     }
+    public float AIReactionTime
+    {
+        get
+        {
+            return _aIReactionTime;
+        }
+    }
     public  virtual TurnType CurrentTurnType
     {
         get
@@ -83,11 +90,15 @@ public class GameMaster : MonoBehaviour
             _currentTurnType = value;
         }
     }
-    public float AIReactionTime
+    public virtual bool IsGamePaused
     {
         get
         {
-            return _aIReactionTime;
+            return _isGamePaused;
+        }
+        protected set
+        {
+            _isGamePaused = value;
         }
     }
     public virtual int MainPlayerIndex
@@ -115,13 +126,6 @@ public class GameMaster : MonoBehaviour
         CustomGameEvents.GetInstance().OnShuffleEnd += ResumePlaying;
 
         GetMainPlayerIndex();
-
-#if UNITY_WEBGL
-        if(_webGLOpenPageOnQuit == null)
-        {
-            _webGLOpenPageOnQuit = "about:blank";
-        }
-#endif
     }
 
     protected virtual void Update()
@@ -190,7 +194,7 @@ public class GameMaster : MonoBehaviour
         }
         else
         {
-            Debug.Log("Error : for ended but _totalCardsGiven != _totalCardsToGive");
+            Debug.Log("Error : GameMaster.DistributeCards ended an incorrect amount of cards");
         }
     }
 
@@ -205,12 +209,10 @@ public class GameMaster : MonoBehaviour
 
     protected virtual void PausePlaying()
     {
-        _isGamePaused = true;
     }
 
     protected virtual void ResumePlaying()
     {
-        _isGamePaused = false;
     }
 
     protected virtual void EndTurn()
@@ -220,20 +222,6 @@ public class GameMaster : MonoBehaviour
     public virtual void CallEndTurn() //Is used by the "end turn" button
     {
         EndTurn();
-    }
-
-    public virtual void QuitGame()
-    {
-#if (UNITY_EDITOR || DEVELOPMENT_BUILD)
-        Debug.Log(this.name + " : " + this.GetType() + " : " + System.Reflection.MethodBase.GetCurrentMethod().Name);
-#endif
-#if (UNITY_EDITOR)
-        UnityEditor.EditorApplication.isPlaying = false;
-#elif (UNITY_STANDALONE) 
-    Application.Quit();
-#elif (UNITY_WEBGL)
-    Application.OpenURL(_webGLOpenPageOnQuit);
-#endif
     }
 
     protected virtual void OnDestroy()
