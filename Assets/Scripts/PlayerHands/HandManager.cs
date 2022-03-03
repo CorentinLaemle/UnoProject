@@ -17,6 +17,7 @@ public class HandManager : MonoBehaviour
     private bool _isForcedToDraw;
     private HandAutoLayout _handAutoLayout;
     private bool _hasDrawnThisTurn;
+    private bool _hasPlayedThisTurn;
 
     public int MyPlayerIndex
     {
@@ -43,6 +44,17 @@ public class HandManager : MonoBehaviour
             _hasDrawnThisTurn = value;
         }
     }
+    public bool HasPlayedThisTurn
+    {
+        get
+        {
+            return _hasPlayedThisTurn;
+        }
+        set
+        {
+            _hasPlayedThisTurn = value;
+        }
+    }
 
     protected virtual void Awake()
     {
@@ -65,7 +77,8 @@ public class HandManager : MonoBehaviour
             return;
         }
         _isCurrentTurnActivePlayer = true;
-        
+
+        HasPlayedThisTurn = false;
         HasDrawnThisTurn = false;
         _isForcedToDraw = true;
 
@@ -114,8 +127,6 @@ public class HandManager : MonoBehaviour
 
     private void DrawCards(int cardNumber)
     {
-        int cardIndex = 0;
-
         for (int i = 0; i < cardNumber; i++)
         {
             GameObject newCard = Instantiate(_cardPrefab, _cardsObjectsParent.transform);
@@ -128,7 +139,7 @@ public class HandManager : MonoBehaviour
             newCardDisplay._card = card;
             newCardDisplay._isCardVisible = IsMainPlayerHand;
 
-            cardIndex = InsertCardInHand(newCardBehaviour);
+            int cardIndex = InsertCardInHand(newCardBehaviour);
             newCard.transform.SetSiblingIndex(cardIndex);
 
             //Populates the _rectTransformList with the corresponding components from the cards contained in the _cardsInHand list
@@ -183,6 +194,7 @@ public class HandManager : MonoBehaviour
     {
         if(playerIndex == MyPlayerIndex)
         {
+            HasPlayedThisTurn = true;
             _handAutoLayout.RepositionCardsInHand();
             CustomGameEvents.GetInstance().CardPlayed(cardPlayed, MyPlayerIndex);
         }

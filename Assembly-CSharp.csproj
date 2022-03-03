@@ -59,6 +59,7 @@
     <Compile Include="Assets\Scripts\Cards\Card.cs" />
     <Compile Include="Assets\Scripts\Variables\FloatVariable.cs" />
     <Compile Include="Assets\Scripts\Audio\AudioManager.cs" />
+    <Compile Include="Assets\Scripts\UI\InGameHelper.cs" />
     <Compile Include="Assets\Scripts\Managers\GameMasters\UnoGameMaster.cs" />
     <Compile Include="Assets\Scripts\Managers\DeckManager.cs" />
     <Compile Include="Assets\Scripts\UI\ReorderCardChildren.cs" />
@@ -69,15 +70,18 @@
     <Compile Include="Assets\Scripts\Cards\ColorIndex.cs" />
     <Compile Include="Assets\Scripts\Audio\AudioSettings.cs" />
     <Compile Include="Assets\Scripts\Managers\GameMasters\GameMaster.cs" />
+    <Compile Include="Assets\Scripts\UI\Buttons\ButtonOpenMenu.cs" />
     <Compile Include="Assets\Scripts\Cards\CardBehaviour.cs" />
+    <Compile Include="Assets\Scripts\UI\Buttons\ButtonSpriteChanger.cs" />
     <Compile Include="Assets\Scripts\Managers\DiscardManager.cs" />
     <Compile Include="Assets\Scripts\CustomGameEvents.cs" />
     <Compile Include="Assets\Scripts\Cards\CardDisplay.cs" />
     <Compile Include="Assets\Scripts\PlayerHands\HandManager.cs" />
-    <Compile Include="Assets\Scripts\Scene management\SceneManager.cs" />
     <Compile Include="Assets\Scripts\UI\CustomAutoLayout\DiscardAutoLayout.cs" />
     <Compile Include="Assets\Scripts\PlayerHands\AI\BrainSettings.cs" />
     <Compile Include="Assets\Scripts\UI\CustomAutoLayout\CustomAutoLayout.cs" />
+    <Compile Include="Assets\Scripts\Scene management\SceneMaster.cs" />
+    <Compile Include="Assets\Scripts\Audio\SimpleAudioCaller.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
