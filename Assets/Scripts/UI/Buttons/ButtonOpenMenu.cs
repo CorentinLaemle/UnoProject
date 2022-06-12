@@ -10,13 +10,15 @@ public class ButtonOpenMenu : MonoBehaviour
     [SerializeField] private int _framesBetweenButtonMoves;
     [SerializeField] private int _buttonMovesAmount;
     
-    [Tooltip("This filed contains the button one clicks on to roll in/out the menu")][SerializeField] private RectTransform _menuButton;
+    [Tooltip("This field contains the button one clicks on to roll in/out the menu")][SerializeField] private GameObject _menuButton;
+    private RectTransform _menuButtonRect;
     private Vector2[] _highButtonCoord;
     private bool _isMenuShrinked;
 
     private void Awake()
     {
         _highButtonCoord = new Vector2[_buttons.Length];
+        _menuButtonRect = _menuButton.GetComponent<RectTransform>();
     }
 
     void Start()
@@ -25,7 +27,7 @@ public class ButtonOpenMenu : MonoBehaviour
 
         for(int i = 0; i < _buttons.Length; i++)
         {
-            _highButtonCoord[i] = new Vector2(_lowButtonCoord[i].x, _menuButton.anchoredPosition.y);
+            _highButtonCoord[i] = new Vector2(_lowButtonCoord[i].x, _menuButtonRect.anchoredPosition.y);
             _buttons[i].anchoredPosition = _highButtonCoord[i];
             _buttons[i].gameObject.SetActive(false);
         }
@@ -34,6 +36,10 @@ public class ButtonOpenMenu : MonoBehaviour
 
     public void ButtonMenuChangeState()
     {
+        if(_menuButton.TryGetComponent<ButtonSpriteChanger>(out ButtonSpriteChanger spriteChanger))
+        {
+            spriteChanger.RotateActiveSprite();
+        }
         StartCoroutine(ChangeMenuState());
     }
 

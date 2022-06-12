@@ -18,15 +18,9 @@ public class PlayerBrain : HandManager
     private int[] _valuesPriorities;
     private int[] _cardNumberPerColor;
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
     protected override void Start()
     {
         base.Start();
-        CustomGameEvents.GetInstance().OnTurnStart += PrepareThinkThinkThink;
         CustomGameEvents.GetInstance().OnCardSelected += UpdatePlayerPriorities;
         CustomGameEvents.GetInstance().OnPlayerHasDrawn += ReactToPlayerDrawing;
         CustomGameEvents.GetInstance().OnActiveCardChanged += UpdateActiveCard;
@@ -42,13 +36,10 @@ public class PlayerBrain : HandManager
         _reactionTime = UnoGameMaster.GetInstance().AIReactionTime;
     }
 
-    private void PrepareThinkThinkThink(int playerIndex)
+    protected override void StartTurn()
     {
-        if (playerIndex == _myPlayerIndex)
-        {
-            _nextPlayer = UnoGameMaster.GetInstance().GetNextActivePlayer();
-            Invoke(nameof(ThinkThinkThink), _reactionTime);
-        }
+        _nextPlayer = UnoGameMaster.GetInstance().GetNextActivePlayer();
+        Invoke(nameof(ThinkThinkThink), _reactionTime); //We call ThinkThinkThink with a delay to mimic a normal player's behavior of not playing within 10 frames
     }
 
     private void ThinkThinkThink() 
@@ -96,7 +87,7 @@ public class PlayerBrain : HandManager
         BrainBlast(cardCount);
     }
 
-    private void BrainBlast(int cardsNumber) //todo : vérifier la logique --> brainBlast et HandManager.StartTurn ne doivent pas se marcher sur les plates-bandes
+    private void BrainBlast(int cardsNumber)
     {
         int bestCardIndex = 0;
         float bestCardPriority = 0f;
@@ -105,11 +96,10 @@ public class PlayerBrain : HandManager
         {
             if (!HasDrawnThisTurn)
             {
-                base.ClickAndDraw();
-                PrepareThinkThinkThink(_myPlayerIndex); //Since one may play the card they just drew
+                ClickAndDraw();
                 return;
             }
-            base.ClickAndDraw();
+            CustomGameEvents.GetInstance().PlayerHasSkipped();
             return;
         }
 
@@ -121,8 +111,8 @@ public class PlayerBrain : HandManager
                 bestCardPriority = _playablePriorities[i];
             }
         }
-
         HasDrawnThisTurn = false;
+        HasPlayedThisTurn = true;
         _playableCards[bestCardIndex].ClickOnCard();
     }
 
@@ -195,7 +185,6 @@ public class PlayerBrain : HandManager
 
     private void OnDestroy()
     {
-        CustomGameEvents.GetInstance().OnTurnStart -= PrepareThinkThinkThink;
         CustomGameEvents.GetInstance().OnCardSelected -= UpdatePlayerPriorities;
         CustomGameEvents.GetInstance().OnPlayerHasDrawn -= ReactToPlayerDrawing;
         CustomGameEvents.GetInstance().OnActiveCardChanged -= UpdateActiveCard;

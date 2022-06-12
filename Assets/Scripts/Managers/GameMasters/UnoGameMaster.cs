@@ -4,7 +4,15 @@ using UnityEngine;
 
 public class UnoGameMaster : GameMaster
 {
+    protected enum AnimationEffects
+    {
+        invert,
+        skipAndDraw,
+        wild
+    }
+
     [SerializeField] protected GameObject _wildChangePanel;
+    [SerializeField] private GameObject _endGamePanel;
 
     private static UnoGameMaster _instance;
 
@@ -30,10 +38,11 @@ public class UnoGameMaster : GameMaster
     protected override void Start()
     {
         base.Start();
-        CustomGameEvents.GetInstance().OnCardPlayedAndDiscarded += ProcessCardEffects;
+        CustomGameEvents.GetInstance().OnCardPlayedAndDiscarded += PlayCardEffectAnimation;
         CustomGameEvents.GetInstance().OnActiveCardChanged += SetCurrentActiveCard;
 
         _wildChangePanel.SetActive(false);
+        _endGamePanel.SetActive(false);
     }
 
     protected override void Update()
@@ -66,17 +75,17 @@ public class UnoGameMaster : GameMaster
     }
 
 
-    protected override void EndTurn() //todo : rajouter la victoire/défaite
+    protected override void EndTurn()
     {
         if (DetermineWinner())
         {
-            Debug.Log("Player " + _winnderIndex + " has won!");
             _arrows[ActivePlayer].SetActive(false);
             PausePlaying();
+            _endGamePanel.SetActive(true);
             return;
         }
 
-        GetNextActivePlayer(ActivePlayer, CurrentTurnType);
+        SetNextActivePlayer(ActivePlayer, CurrentTurnType);
         CustomGameEvents.GetInstance().ActiveCardChanged(ActiveCard);
         CustomGameEvents.GetInstance().TurnStart(ActivePlayer);
         _turnBeginTimeMarker = Time.time;
@@ -87,7 +96,7 @@ public class UnoGameMaster : GameMaster
         ActiveCard = card;
     }
 
-    private void GetNextActivePlayer(int currentPlayer, TurnType turnType)
+    private void SetNextActivePlayer(int currentPlayer, TurnType turnType)
     {
         int nextPlayer = 0;
         switch (turnType)
@@ -130,6 +139,8 @@ public class UnoGameMaster : GameMaster
 
     protected void ProcessCardEffects(Card cardPlayed, int playerIndex) //This method will be used to process the effects of every played card. It is called though a CustomGameEvent
     {
+        StopCoroutine(AnimStatusCheck(cardPlayed, playerIndex));
+
         ActiveCard = cardPlayed;
 
         switch (cardPlayed._cardValue)
@@ -168,21 +179,21 @@ public class UnoGameMaster : GameMaster
 
             case 10: //"invert turn"
                 InvertTurnType();
-                Invoke(nameof(EndTurn), _effectsAnimationDuration);
+                EndTurn();
                 break;
 
             case 11: //"skip next" --> we call DetermineNextActivePlayer once here, then another time after the switch 
-                GetNextActivePlayer(ActivePlayer, CurrentTurnType);
-                Invoke(nameof(EndTurn), _effectsAnimationDuration);
+                SetNextActivePlayer(ActivePlayer, CurrentTurnType);
+                EndTurn();
                 break;
 
             case 12: //"skip next" + "draw 2"
-                GetNextActivePlayer(ActivePlayer, CurrentTurnType);
+                SetNextActivePlayer(ActivePlayer, CurrentTurnType);
                 if (!_players[ActivePlayer].TryDrawCard(2))
                 {
                     _players[ActivePlayer].TryDrawCard(2);
                 }
-                Invoke(nameof(EndTurn), _effectsAnimationDuration);
+                EndTurn();
                 break;
 
             case 13: //"color change"
@@ -190,19 +201,42 @@ public class UnoGameMaster : GameMaster
                 break;
 
             case 14: //"color change" + "skip next" + "draw 4"
-                ChooseActiveColor(playerIndex);  //EndTurn() will be called AFTER the color has been chosen, directly in the WildChange() method, called by ChooseActiveColor()
-
-                GetNextActivePlayer(ActivePlayer, CurrentTurnType);
+                SetNextActivePlayer(ActivePlayer, CurrentTurnType);
                 if (!_players[ActivePlayer].TryDrawCard(4))
                 {
                     _players[ActivePlayer].TryDrawCard(4);
                 }
+                ChooseActiveColor(playerIndex);  //EndTurn() will be called AFTER the color has been chosen, directly in the WildChange() method, called by ChooseActiveColor()
                 break;
 
             default:
                 Debug.Log("error : ProcessCardEffects cardValue incorrect");
                 break;
         }
+    }
+
+    private void PlayCardEffectAnimation(Card cardPlayed, int playerIndex)
+    {
+        int cardValue = cardPlayed._cardValue;
+        if(cardValue >= 10 && cardValue < 15)
+        {
+            CardEffectsMaster.GetInstance().StartCardEffectAnim(cardValue);
+            StartCoroutine(AnimStatusCheck(cardPlayed, playerIndex));
+        }
+        else
+        {
+            ProcessCardEffects(cardPlayed, playerIndex);
+        }
+    }
+
+    private IEnumerator AnimStatusCheck(Card card, int playerIndex)
+    {
+        while(!CardEffectsMaster.GetInstance().IsAnimOver)
+        {
+            yield return new WaitForSeconds(_animStatusCheckDelay);
+        }
+        Debug.Log("Anim over, processing card effect");
+        ProcessCardEffects(card, playerIndex);
     }
 
     private void ChooseActiveColor(int playerIndex)
@@ -231,12 +265,12 @@ public class UnoGameMaster : GameMaster
         }
     }
 
-    public void WildChange(Card card) //This method will be called upon clicking on a color after ChooseActiveColor
+    public void WildChange(Card card) //This method will also be called upon clicking on a color after ChooseActiveColor
     {
         ActiveCard = card;
         ResumePlaying();
         _wildChangePanel.SetActive(false);
-        Invoke(nameof(EndTurn), _effectsAnimationDuration);
+        EndTurn();
     }
 
     private void InvertTurnType()
@@ -273,7 +307,7 @@ public class UnoGameMaster : GameMaster
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        CustomGameEvents.GetInstance().OnCardPlayed -= ProcessCardEffects;
+        CustomGameEvents.GetInstance().OnCardPlayedAndDiscarded -= PlayCardEffectAnimation;
         CustomGameEvents.GetInstance().OnActiveCardChanged += SetCurrentActiveCard;
     }
 }

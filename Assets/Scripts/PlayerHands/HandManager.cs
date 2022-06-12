@@ -9,7 +9,6 @@ public class HandManager : MonoBehaviour
 
     [SerializeField] [Tooltip("Bottom = 0, left = 1, top = 2 and right = 3")] protected int _myPlayerIndex;
     [SerializeField] private bool _isMainPlayerHand;
-    [SerializeField] private bool _isCurrentTurnActivePlayer;
     [SerializeField] private GameObject _cardPrefab;
     [SerializeField] private GameObject _cardsObjectsParent;
     [SerializeField] private AudioSource _source;
@@ -44,7 +43,7 @@ public class HandManager : MonoBehaviour
             _hasDrawnThisTurn = value;
         }
     }
-    public bool HasPlayedThisTurn
+    public bool HasPlayedThisTurn //is used by the cardBehaviour script on each card in the player's hand
     {
         get
         {
@@ -63,57 +62,59 @@ public class HandManager : MonoBehaviour
 
     protected virtual void Start()
     {
-        CustomGameEvents.GetInstance().OnTurnStart += StartTurn;
+        CustomGameEvents.GetInstance().OnTurnStart += PrepareTurn;
         CustomGameEvents.GetInstance().OnCardSelected += PlayCard;
 
         AudioManager.GetInstance().SetAudioSource(_source, "DRAWCARD");
     }
 
-    private void StartTurn(int playerIndex)
+    protected virtual void PrepareTurn(int playerIndex)
     {
-        if(playerIndex != MyPlayerIndex)
+        if (playerIndex != MyPlayerIndex)
         {
-            _isCurrentTurnActivePlayer = false;
             return;
         }
-        _isCurrentTurnActivePlayer = true;
-
         HasPlayedThisTurn = false;
         HasDrawnThisTurn = false;
-        _isForcedToDraw = true;
+        StartTurn();
+    }
 
-        for(int i = 0 ; i < _cardsInHand.Count; i++)
+    protected virtual void StartTurn()
+    {
+        _isForcedToDraw = true;
+        for (int i = 0; i < _cardsInHand.Count; i++)
         {
-            if(_cardsInHand[i]._isPlayable == true)
+            if (_cardsInHand[i]._isPlayable == true)
             {
                 _isForcedToDraw = false;
                 break;
             }
         }
-        if(_isForcedToDraw == true)
+        if (_isForcedToDraw == true)
         {
-            CustomGameEvents.GetInstance().PlayerMustDraw(); //Is listened by the DeckManager --> if called, the deckManager will enable its button and outline
-        }
-    }
-
-    protected void ClickAndDraw() //used only to draw a card from the deck when forced to do so
-    {
-        if (_isCurrentTurnActivePlayer && !HasDrawnThisTurn)
-        {
-            HasDrawnThisTurn = true;
-
-            if (!TryDrawCard(1))
+            if (HasDrawnThisTurn)
             {
-                HasDrawnThisTurn = false;
-                ClickAndDraw();
+                CustomGameEvents.GetInstance().PlayerHasSkipped();
                 return;
             }
-            return;
+            CustomGameEvents.GetInstance().PlayerMustDraw(); //Is listened by the DeckManager --> if called, the deckManager will enable its button and outline
         }
-        CustomGameEvents.GetInstance().PlayerHasSkipped();
+        HasDrawnThisTurn = false;
     }
 
-    public bool TryDrawCard(int cardNumber)
+    protected void ClickAndDraw() //used only to draw a card from the deck
+    {
+        HasDrawnThisTurn = true;
+        if (!TryDrawCard(1))
+        {
+            HasDrawnThisTurn = false;
+            ClickAndDraw();
+            return;
+        }
+        Invoke(nameof(StartTurn), 0.1f); //Makes sure that the newly drawn card is accounted for when calculating _isForcedToDraw
+    }
+
+    public bool TryDrawCard(int cardNumber) 
     {
         //Checks if there are enough cards left in the deck for the requested amount of cards. If false, the deck is shuffled.
         if (DeckManager.GetInstance().CheckDrawPossible(cardNumber))
@@ -207,7 +208,7 @@ public class HandManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        CustomGameEvents.GetInstance().OnTurnStart -= StartTurn;
+        CustomGameEvents.GetInstance().OnTurnStart -= PrepareTurn;
         CustomGameEvents.GetInstance().OnCardSelected -= PlayCard;
     }
 }
