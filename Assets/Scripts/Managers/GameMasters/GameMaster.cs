@@ -21,7 +21,7 @@ public class GameMaster : MonoBehaviour
     [SerializeField] protected int _activePlayer;
     [SerializeField] protected TurnType _currentTurnType;
     [SerializeField] [Range(0,3f)] protected float _aIReactionTime;
-    [SerializeField] [Range(0, 3f)] protected float _effectsAnimationDuration;
+    [SerializeField] [Range(0, 3f)] protected float _animStatusCheckDelay;
 
     protected int _mainPlayerIndex;
     protected int _winnderIndex;

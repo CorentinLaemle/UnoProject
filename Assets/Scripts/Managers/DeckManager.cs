@@ -159,8 +159,6 @@ public class DeckManager : MonoBehaviour
         }
     }
 
-
-    
     private void OnDestroy()
     {
         CustomGameEvents.GetInstance().OnPlayerMustDraw -= ActivateButton;

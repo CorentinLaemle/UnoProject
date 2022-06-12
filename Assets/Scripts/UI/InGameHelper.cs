@@ -11,8 +11,6 @@ public class InGameHelper : MonoBehaviour
 
     private void Start()
     {
-        CustomGameEvents.GetInstance().OnFirstShuffleEnded += GetNextTip;
-
         foreach (GameObject tip in _tips)
         {
             tip.SetActive(false);
@@ -22,25 +20,32 @@ public class InGameHelper : MonoBehaviour
 
     public void GetNextTip()
     {
-        if(_tipsPanel.activeInHierarchy == false)
-        {
-            _tipsPanel.SetActive(true);
-            _nextTipIndex = 0;
-        }
+        _tipsPanel.SetActive(true);
 
         foreach (GameObject tip in _tips)
         {
             tip.SetActive(false);
         }
 
-        if (_nextTipIndex < _tips.Length)
+        if (_nextTipIndex <= _tips.Length)
         {
-            _tips[_nextTipIndex].SetActive(true);
+            if(_nextTipIndex != _tips.Length)
+            {
+                _tips[_nextTipIndex].SetActive(true);
+            }
             _nextTipIndex++;
-            return;
         }
-        _tipsPanel.SetActive(false);
-        _nextTipIndex = 0;
+
+        if (_nextTipIndex > _tips.Length)
+        {
+            foreach (GameObject tip in _tips)
+            {
+                tip.SetActive(false);
+            }
+
+            _tipsPanel.SetActive(false);
+            _nextTipIndex = 0;
+        }
     }
 
     private void OnDestroy()
