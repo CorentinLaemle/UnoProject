@@ -6,7 +6,7 @@ using UnityEngine;
 public class DiscardAutoLayout : CustomAutoLayout
 {
     [SerializeField] private bool _isCardsRotationOn;
-    [SerializeField][Range(0.1f, 1f)] private float _cardEnlargerFactor;
+    //[SerializeField][Range(0.1f, 1f)] private float _cardEnlargerFactor;
 
     private DiscardManager _myDiscardManager;
 

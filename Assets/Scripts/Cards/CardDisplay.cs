@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class CardDisplay : MonoBehaviour
 {
+    //this script is responsible of displaying the correct color for the card it is on
+
     public Card _card;
     public bool _isCardVisible;
     public ColorIndex _colorIndex;

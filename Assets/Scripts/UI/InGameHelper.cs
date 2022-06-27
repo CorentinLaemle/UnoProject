@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InGameHelper : MonoBehaviour
+public class InGameHelper : MonoBehaviour //WIP : a set of tips to present the in-game buttons. Future uncertain
 {
     [SerializeField] private GameObject[] _tips;
     [SerializeField] private GameObject _tipsPanel;
@@ -46,10 +46,5 @@ public class InGameHelper : MonoBehaviour
             _tipsPanel.SetActive(false);
             _nextTipIndex = 0;
         }
-    }
-
-    private void OnDestroy()
-    {
-        CustomGameEvents.GetInstance().OnFirstShuffleEnded -= GetNextTip;
     }
 }

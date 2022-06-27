@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(RectTransform))]
-public class CustomAutoLayout : MonoBehaviour
+public class CustomAutoLayout : MonoBehaviour //a custom AutoLayout script. Is inherited by HandAutoLayout and DiscardAutoLayout
 {
     public List<RectTransform> _cardsRectTransformList;
 

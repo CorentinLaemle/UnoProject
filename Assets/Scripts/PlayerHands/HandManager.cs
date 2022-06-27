@@ -79,7 +79,7 @@ public class HandManager : MonoBehaviour
         StartTurn();
     }
 
-    protected virtual void StartTurn()
+    protected virtual void StartTurn() //this method checks if the player can play this turn, and if they must draw or pass
     {
         _isForcedToDraw = true;
         for (int i = 0; i < _cardsInHand.Count; i++)
@@ -126,7 +126,7 @@ public class HandManager : MonoBehaviour
         return false;
     }
 
-    private void DrawCards(int cardNumber)
+    private void DrawCards(int cardNumber) //instanciates a new card in the hand
     {
         for (int i = 0; i < cardNumber; i++)
         {
@@ -155,7 +155,7 @@ public class HandManager : MonoBehaviour
         }
     }
 
-    private int InsertCardInHand(CardBehaviour cardBehaviour)
+    private int InsertCardInHand(CardBehaviour cardBehaviour) //this method calculates the correct siblingIndex of the new card inside the hand, depending on its color and cardValue
     {
         int index = 0;
         bool isIndexFound = false;
@@ -189,8 +189,8 @@ public class HandManager : MonoBehaviour
         return index+1;
     }
 
-    //on joue une carte en deux étapes : tout d'abord, en cliquant sur une carte on lance l'event OnCardSelected, qui est écouté par PlayCard
-    //PlayCard va ensuite lancer RepositionCardsInHand + être écouté par le discard manager qui récupèrera la carte jouée depuis la main
+    //A card is played in 2 steps : by clicking on a card, we call the CustomGameEvent OnCardSelected (listened by PlayCard() below)
+    //PlayCard() then calls RepositionCardsInHand() and the CustomGameEvent CardPlayed, which is listenend by the dicardManager
     private void PlayCard(Card cardPlayed, int playerIndex)
     {
         if(playerIndex == MyPlayerIndex)

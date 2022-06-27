@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class SoundData
+public class SoundData //this class contains all the parameters we use with any sound file
 {
     public enum SoundType
     {

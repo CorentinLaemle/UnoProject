@@ -8,7 +8,7 @@ public class SimpleAudioCaller : MonoBehaviour
     [SerializeField] private string _soundName;
     [SerializeField] private bool _isPlayOnStart;
 
-    void Start()
+    void Start() //a simple audio caller
     {
         AudioManager.GetInstance().SetAudioSource(_source, _soundName);
 

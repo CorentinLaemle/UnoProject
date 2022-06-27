@@ -69,13 +69,15 @@
     <Compile Include="Assets\Scripts\PlayerHands\AI\PlayerBrain.cs" />
     <Compile Include="Assets\Scripts\Cards\DeckList.cs" />
     <Compile Include="Assets\Scripts\Cards\ColorIndex.cs" />
-    <Compile Include="Assets\Scripts\Audio\AudioSettings.cs" />
+    <Compile Include="Assets\Scripts\CardEffects\SkipCardEffect.cs" />
+    <Compile Include="Assets\Scripts\CardEffects\ReverseCardEffect.cs" />
     <Compile Include="Assets\Scripts\Managers\GameMasters\GameMaster.cs" />
     <Compile Include="Assets\Scripts\UI\Buttons\ButtonOpenMenu.cs" />
     <Compile Include="Assets\Scripts\Cards\CardBehaviour.cs" />
     <Compile Include="Assets\Scripts\CardEffects\CardEffect.cs" />
     <Compile Include="Assets\Scripts\UI\Buttons\ButtonSpriteChanger.cs" />
     <Compile Include="Assets\Scripts\Managers\DiscardManager.cs" />
+    <Compile Include="Assets\Scripts\CardEffects\WildCardEffect.cs" />
     <Compile Include="Assets\Scripts\CustomGameEvents.cs" />
     <Compile Include="Assets\Scripts\Cards\CardDisplay.cs" />
     <Compile Include="Assets\Scripts\PlayerHands\HandManager.cs" />
@@ -85,7 +87,6 @@
     <Compile Include="Assets\Scripts\PlayerHands\AI\BrainSettings.cs" />
     <Compile Include="Assets\Scripts\UI\CustomAutoLayout\CustomAutoLayout.cs" />
     <Compile Include="Assets\Scripts\Scene management\SceneMaster.cs" />
-    <Compile Include="Assets\Scripts\Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

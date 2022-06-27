@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class CardBehaviour : MonoBehaviour
 {
+    //this script is responsible for updating the button.interactable bool depending on the ActiveCard cardValue + color parameters.
+    //it also contains the methods called whenever a card is selected (or clicked on).
+
     public bool _isPlayable;
     public Card _myCard;
 
@@ -42,12 +45,12 @@ public class CardBehaviour : MonoBehaviour
         UpdateActiveCard(UnoGameMaster.GetInstance().ActivePlayer);
     }
 
-    private void UpdateActiveCard(Card card)
+    private void UpdateActiveCard(Card card) //is called whenever the ActiveCard changes ==> calls UpdateActiveCard (method below)
     {
         UpdateActiveCard(UnoGameMaster.GetInstance().ActivePlayer);
     }
 
-    private void UpdateActiveCard(int playerIndex)
+    private void UpdateActiveCard(int playerIndex) //this method checks if the card this script is on can be played, and permits/prevents the card being clicked on depending on the result
     {
         _currentActiveCard = UnoGameMaster.GetInstance().ActiveCard;
 
@@ -67,7 +70,7 @@ public class CardBehaviour : MonoBehaviour
         }
     }
 
-    //This method is called when a card is clicked on
+    //This method is called when a card is clicked on, or selected by an AI player
     public void ClickOnCard()
     {
         if (_isCardInHand && UnoGameMaster.GetInstance().ActivePlayer == _myPlayerIndex)
@@ -76,7 +79,7 @@ public class CardBehaviour : MonoBehaviour
         }
     }
 
-    private void IHaveBeenPlayed(Card card) 
+    private void IHaveBeenPlayed(Card card) //this method removes all the card gameObject's dependencies before destroying it, whenever ClickOnCard() is called
     {
         for(int i = 0; i < _myHandManager._cardsInHand.Count; i++)
         {

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2121b98b9ad50384889628ad8e25490e, type: 3}
+  m_Name: EasyMode
+  m_EditorClassIdentifier: 
+  _numberOfCardColours: 5
+  _maximumCardValue: 15
+  _colorPriorityIncrement: 3
+  _playerPriorityIncrement: 1
+  _valuePriorityIncrement: 1
+  _vengefulness: 2
+  _pityfulness: 1
+  _skipCardFactor: 0
+  _isVengeful: 1
+  _isPityful: 1
+  _isExecutionner: 1

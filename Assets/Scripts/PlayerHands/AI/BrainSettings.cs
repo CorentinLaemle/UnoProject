@@ -20,6 +20,7 @@ public class BrainSettings : ScriptableObject
     [SerializeField] private bool _isPityful;
     [SerializeField] private bool _isExecutionner;
 
+    //all parameters are explained in the PlayerBrain script, as well as above this line
     public int Colours
     {
         get
