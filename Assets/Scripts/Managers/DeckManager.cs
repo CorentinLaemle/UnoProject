@@ -47,7 +47,7 @@ public class DeckManager : MonoBehaviour
         PrepareDeck(); //This should be the only method related to cards business called on Start() from a manager script
     }
 
-    private void PrepareDeck() //This method is called at the start of the game.
+    private void PrepareDeck() //This method is called at the start of the game. It prepares the bufferDeckList 
     {
         _isFirstShuffle = true;
         _cardsList = new List<Card>();
@@ -66,14 +66,14 @@ public class DeckManager : MonoBehaviour
 
         if(!_isFirstShuffle)
         {
-            //on rajoute dans _bufferDeckList les cartes de la défausse (sauf la dernière), et les éventuelles cartes restantes dans la bibliothèque
+            //we add all the cards left in the library and the discard (except the last discard card) to _bufferDeckList
             if (_discardManager._discardList.Count > 1)
             {
                 int discardCards = _discardManager._discardList.Count;
 
                 for(int i = 0; i < discardCards - 1; i++)
                 {
-                    _bufferDeckList.Add(_discardManager.DeleteCardFromDiscard());
+                    _bufferDeckList.Add(_discardManager.DeleteCardFromDiscard()); //the DeleteCardFromDiscard returns a Card parameter
                 }
             }
             if(_cardsList.Count != 0)
@@ -104,7 +104,7 @@ public class DeckManager : MonoBehaviour
         Invoke(nameof(Shuffle), _shuffleAnim.length);
     }
 
-    private void Shuffle()
+    private void Shuffle() //creates a new random deck list from _bufferDeckList
     {
         int minRandom = 0;
         int maxRandom = _deckCardsAmount;
@@ -118,16 +118,16 @@ public class DeckManager : MonoBehaviour
             maxRandom--;
         }
 
-        if(_isFirstShuffle)
+        if(_isFirstShuffle) //set to true in Start()
         {
             _isFirstShuffle = false;
-            CustomGameEvents.GetInstance().FirstShuffleEnded();
+            CustomGameEvents.GetInstance().FirstShuffleEnded(); //is listened by the UnoGameMaster script --> the cards can now be distributed amongst players
             return;
         }
-        CustomGameEvents.GetInstance().ShuffleEnd();
+        CustomGameEvents.GetInstance().ShuffleEnd(); //is listened by the UnoGameMaster script --> the deck has finished shuffling
     }
 
-    public bool CheckDrawPossible(int cardNumber)
+    public bool CheckDrawPossible(int cardNumber) //is called whenever we need to draw a card : if not, the deck shuffles
     {
         if(cardNumber <= _cardsList.Count)
         {
@@ -150,7 +150,7 @@ public class DeckManager : MonoBehaviour
         return drawnCard;
     }
 
-    private void ActivateButton()
+    private void ActivateButton() //listends to the OnPlayerMustDraw customGameEvent (specifically whenever the main player must draw)
     {
         if(UnoGameMaster.GetInstance().ActivePlayer == UnoGameMaster.GetInstance().MainPlayerIndex)
         {

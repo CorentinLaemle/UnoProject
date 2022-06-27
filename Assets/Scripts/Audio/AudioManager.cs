@@ -31,12 +31,10 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
-
         else
         {
             _instance = this;
         }        
-
         _audioManagerAudioSource = gameObject.GetComponent<AudioSource>();
     }
 
@@ -45,12 +43,14 @@ public class AudioManager : MonoBehaviour
         PlayMusic();
     }  
 
-    private void PlayMusic()
+    private void PlayMusic() //this method is responsible to playing the background music
     {
         _audioManagerAudioSource.Play();
     }
 
-    public void SetAudioSource(AudioSource source, string soundName)
+    //this AudioManager only supports a basin audio functionnality : one gameObject may only be related to one sound file
+    //this method is called by these gameObjects in order to initialize their sound component
+    public void SetAudioSource(AudioSource source, string soundName) 
     {
         SoundData s = Array.Find(_sounds, sound => sound._name == soundName);
         if(s == null)
@@ -69,6 +69,7 @@ public class AudioManager : MonoBehaviour
         source.spatialBlend = _spatialBlendValue;
     }
 
+    //this method is called by the sound GameObjects whenever they need to play their sound file
     public void PlayPitchedSound(AudioSource source, float minPitch = .9f, float maxPitch = 1.1f)
     {
         float pitch = UnityEngine.Random.Range(minPitch, maxPitch);

@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class SceneMaster : MonoBehaviour
 {
+    //Manages scene changes
+
     [SerializeField] private string _webGLOpenPageOnQuit;
     [SerializeField] private Image _loadImage;
     [SerializeField] private float _waitTimeBeforeLoading;

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameMaster : MonoBehaviour
 {
+    //this sript is the basis from which UnoGameMaster inherits
+    
     public enum TurnType
     {
         clockwise,
@@ -13,7 +15,6 @@ public class GameMaster : MonoBehaviour
     public HandManager[] _players;
     
     [Range(0, 1)] public float _delayBetweenTryDraws;
-    [Range(5, 20)] public float _turnTime;
 
     [SerializeField] protected GameObject[] _arrows;
     [SerializeField] private int _cardsToDistribute;
@@ -27,8 +28,6 @@ public class GameMaster : MonoBehaviour
     protected int _winnderIndex;
     protected int _totalCardsGiven;
     protected int _totalCardsToGive;
-    protected float _turnBeginTimeMarker;
-    protected bool _isGamePaused;
     protected Card _activeCard;
     protected Card _impossibleCard;
 
@@ -36,7 +35,7 @@ public class GameMaster : MonoBehaviour
     {
         get
         {
-            if (_activeCard != null && _isGamePaused == false)
+            if (_activeCard != null)
             {
                 return _activeCard;
             }
@@ -90,17 +89,6 @@ public class GameMaster : MonoBehaviour
             _currentTurnType = value;
         }
     }
-    public virtual bool IsGamePaused
-    {
-        get
-        {
-            return _isGamePaused;
-        }
-        protected set
-        {
-            _isGamePaused = value;
-        }
-    }
     public virtual int MainPlayerIndex
     {
         get
@@ -128,18 +116,6 @@ public class GameMaster : MonoBehaviour
         GetMainPlayerIndex();
     }
 
-    protected virtual void Update()
-    {
-        if ((!_isGamePaused) && (_turnBeginTimeMarker + _turnTime == Time.time))
-        {
-            EndTurn();
-        }
-        if (_isGamePaused)
-        {
-            _turnBeginTimeMarker -= Time.deltaTime;
-        }
-    }
-
     protected void GetMainPlayerIndex()
     {
         foreach(HandManager player in _players)
@@ -157,7 +133,6 @@ public class GameMaster : MonoBehaviour
         ActivePlayer = 1;
         _totalCardsToGive = _players.Length * _cardsToDistribute;
         _totalCardsGiven = 0;
-        _isGamePaused = true;
         StartCoroutine(DistributeCards());
     }
 
@@ -189,7 +164,6 @@ public class GameMaster : MonoBehaviour
 
         if(_totalCardsGiven == _totalCardsToGive)
         {
-            _isGamePaused = false;
             CustomGameEvents.GetInstance().DistributeCardsEnded();
         }
         else

@@ -466,8 +466,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Play
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: c77ce3d355cdc5d48bcb2071f4822074, type: 2}
-  m_sharedMaterial: {fileID: 2704748081925626564, guid: c77ce3d355cdc5d48bcb2071f4822074, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0ce8b33c6650adb4a9231d991da80a78, type: 2}
+  m_sharedMaterial: {fileID: 2303724097493781219, guid: 0ce8b33c6650adb4a9231d991da80a78, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -491,12 +491,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 120
-  m_fontSizeBase: 120
+  m_fontSize: 80
+  m_fontSizeBase: 80
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 84.79
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -832,7 +832,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: e3e988864c0648d4985261dca0464fc8, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.2
+  m_Volume: 0.18
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -2207,8 +2207,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Exit
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: c77ce3d355cdc5d48bcb2071f4822074, type: 2}
-  m_sharedMaterial: {fileID: 2704748081925626564, guid: c77ce3d355cdc5d48bcb2071f4822074, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0ce8b33c6650adb4a9231d991da80a78, type: 2}
+  m_sharedMaterial: {fileID: 2303724097493781219, guid: 0ce8b33c6650adb4a9231d991da80a78, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2232,8 +2232,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 120
-  m_fontSizeBase: 120
+  m_fontSize: 80
+  m_fontSizeBase: 80
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

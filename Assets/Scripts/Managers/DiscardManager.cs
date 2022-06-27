@@ -50,7 +50,7 @@ public class DiscardManager : MonoBehaviour
     private void DiscardCardFromDeck() //Will only be called once, at the start of the game
     {
         GameObject newCard = Instantiate(_cardPrefab, transform);
-        Card card = DeckManager.GetInstance().DrawOneCard();
+        Card card = DeckManager.GetInstance().DrawOneCard(); //we don't need to call CheckDrawPossible --> the deck will always contain 1 card at this point
 
         CardBehaviour cardBehaviour = newCard.GetComponent<CardBehaviour>();
         cardBehaviour.enabled = false;
@@ -69,7 +69,7 @@ public class DiscardManager : MonoBehaviour
         CustomGameEvents.GetInstance().GameStart();
     }
 
-    private void DiscardCard(Card card, int playerIndex)
+    private void DiscardCard(Card card, int playerIndex) //is called whenever a card is played ; this script instanciates a card GameObject in the discard
     {
         GameObject newCard = Instantiate(_cardPrefab, transform);
         

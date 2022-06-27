@@ -45,12 +45,7 @@ public class UnoGameMaster : GameMaster
         _endGamePanel.SetActive(false);
     }
 
-    protected override void Update()
-    {
-        base.Update();
-    }
-
-    protected override void PausePlaying()
+    protected override void PausePlaying() //this method is called by the GameMaster script in order to disable all card outlines in the player's hand
     {
         if (_impossibleCard == null)
         {
@@ -65,17 +60,15 @@ public class UnoGameMaster : GameMaster
             }
         }
         CustomGameEvents.GetInstance().ActiveCardChanged(_impossibleCard);
-        _isGamePaused = true;
     }
 
-    protected override void ResumePlaying()
+    protected override void ResumePlaying() 
     {
-        _isGamePaused = false;
         CustomGameEvents.GetInstance().ActiveCardChanged(ActiveCard);
     }
 
 
-    protected override void EndTurn()
+    protected override void EndTurn() //does all the end of turn actions
     {
         if (DetermineWinner())
         {
@@ -88,7 +81,6 @@ public class UnoGameMaster : GameMaster
         SetNextActivePlayer(ActivePlayer, CurrentTurnType);
         CustomGameEvents.GetInstance().ActiveCardChanged(ActiveCard);
         CustomGameEvents.GetInstance().TurnStart(ActivePlayer);
-        _turnBeginTimeMarker = Time.time;
     }
 
     private void SetCurrentActiveCard(Card card)
@@ -96,7 +88,7 @@ public class UnoGameMaster : GameMaster
         ActiveCard = card;
     }
 
-    private void SetNextActivePlayer(int currentPlayer, TurnType turnType)
+    private void SetNextActivePlayer(int currentPlayer, TurnType turnType) //this method is called by the GameMaster script whenever a skip card is player, or when the turn ends
     {
         int nextPlayer = 0;
         switch (turnType)
@@ -117,7 +109,7 @@ public class UnoGameMaster : GameMaster
         _arrows[nextPlayer].SetActive(true);
         ActivePlayer = nextPlayer;
     }
-    public int GetNextActivePlayer()
+    public int GetNextActivePlayer() //this method is called by the PlayerBrain (AI) to know which player is the next to play
     {
         int nextPlayer = 0;
         switch (CurrentTurnType)
@@ -135,6 +127,20 @@ public class UnoGameMaster : GameMaster
                 break;
         }
         return nextPlayer;
+    }
+
+    private void PlayCardEffectAnimation(Card cardPlayed, int playerIndex) //this method is called by a CustomGameEvent, whenever a card is played
+    {
+        int cardValue = cardPlayed._cardValue;
+        if (cardValue >= 10 && cardValue < 15) //if the played card has a special effect, we start this effect through CardEffectsmaster
+        {
+            CardEffectsMaster.GetInstance().StartCardEffectAnim(cardValue);
+            StartCoroutine(AnimStatusCheck(cardPlayed, playerIndex));
+        }
+        else //otherwise, we call ProcessCardEffects to process the actual effects of the card
+        {
+            ProcessCardEffects(cardPlayed, playerIndex);
+        }
     }
 
     protected void ProcessCardEffects(Card cardPlayed, int playerIndex) //This method will be used to process the effects of every played card. It is called though a CustomGameEvent
@@ -215,21 +221,7 @@ public class UnoGameMaster : GameMaster
         }
     }
 
-    private void PlayCardEffectAnimation(Card cardPlayed, int playerIndex)
-    {
-        int cardValue = cardPlayed._cardValue;
-        if(cardValue >= 10 && cardValue < 15)
-        {
-            CardEffectsMaster.GetInstance().StartCardEffectAnim(cardValue);
-            StartCoroutine(AnimStatusCheck(cardPlayed, playerIndex));
-        }
-        else
-        {
-            ProcessCardEffects(cardPlayed, playerIndex);
-        }
-    }
-
-    private IEnumerator AnimStatusCheck(Card card, int playerIndex)
+    private IEnumerator AnimStatusCheck(Card card, int playerIndex) //this coroutine will check regularly to know if the called cardEffect animation is done
     {
         while(!CardEffectsMaster.GetInstance().IsAnimOver)
         {
@@ -270,7 +262,7 @@ public class UnoGameMaster : GameMaster
         ActiveCard = card;
         ResumePlaying();
         _wildChangePanel.SetActive(false);
-        EndTurn();
+        EndTurn(); //todo : implanter l'appel de l'anim de choix de la couleur ; cette dernière appelera EndTurn()
     }
 
     private void InvertTurnType()

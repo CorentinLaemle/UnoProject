@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayerBrain : HandManager
 {
+    //This script regulates the AI. It inherits from HandManager
+
     [SerializeField] private BrainSettings _brainSettings;
     [SerializeField] private CardBehaviour[] _playableCards;
     [SerializeField] private float[] _playablePriorities;
@@ -42,7 +44,7 @@ public class PlayerBrain : HandManager
         Invoke(nameof(ThinkThinkThink), _reactionTime); //We call ThinkThinkThink with a delay to mimic a normal player's behavior of not playing within 10 frames
     }
 
-    private void ThinkThinkThink() 
+    private void ThinkThinkThink() //this method will determine the best playable cards for this turn, and give each of them a priority value
     {
         int playableCards = 0;
         int cardCount = 0;
@@ -87,7 +89,7 @@ public class PlayerBrain : HandManager
         BrainBlast(cardCount);
     }
 
-    private void BrainBlast(int cardsNumber)
+    private void BrainBlast(int cardsNumber) //this method will first determine the AI's actions depending on Thinkthinkthink's outcome
     {
         int bestCardIndex = 0;
         float bestCardPriority = 0f;
@@ -117,7 +119,7 @@ public class PlayerBrain : HandManager
     }
 
     #region ParametersUpdates
-    public int MostInterestingColor()
+    public int MostInterestingColor() //is called by UnoGameMaster whenever this AI plays a wild (black) card
     {
         int bestColorIndex = 0;
         int mostCardInAColor = 0;

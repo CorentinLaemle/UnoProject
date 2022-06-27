@@ -16,8 +16,8 @@ public class HandAutoLayout : CustomAutoLayout
     [SerializeField] private int _defaultPixelsBetweenCards;
     [SerializeField] private int _cardsGapDecrementStep;
     [SerializeField][Range(-1,1)] private float _fanCenterGap;
-    [SerializeField][Range(0,1)] private float _fanCurveIntensity;
-    [SerializeField] private float _cardRotPerCardInHand;
+    [SerializeField][Range(0,10)] private float _fanCurveIntensity;
+    [SerializeField][Range(-10,10)] private float _cardRotPerCardInHand;
     [SerializeField] private RectTransform _zoomedInHandArea;
 
     private float _trueFanGap;
@@ -36,13 +36,11 @@ public class HandAutoLayout : CustomAutoLayout
 
     private void Start()
     {
-        _trueFanGap = _fanCenterGap * _cardHeight;
-        _trueFanCurve = _fanCurveIntensity * _cardWidth;
         _activeHandArea = _rectTransform;
         _isExpanded = false;
     }
 
-    public void ExpandCardArea()
+    public void ExpandCardArea() //this method is called from a button click. A simple cheat to better see the cards in the main player's hand
     {
         if(_isExpanded == false)
         {
@@ -91,6 +89,8 @@ public class HandAutoLayout : CustomAutoLayout
         float rotY = 0f;
         float rotZ = 0f;
         int correctZ = _cardHeight / 2; //since the cards are tilted towards the screen, we need to move them away from their hand area in order to avoid clipping
+        _trueFanGap = _fanCenterGap * _cardHeight;
+        _trueFanCurve = _fanCurveIntensity * _cardWidth / 100;
 
         //calculates the rought number of pixels we have at our disposal to place all the cards. We cast as an int since anchors may have float values.
         int handAreaSize = (int)(Screen.height * (_activeHandArea.anchorMax.y - _activeHandArea.anchorMin.y));
@@ -134,32 +134,35 @@ public class HandAutoLayout : CustomAutoLayout
                 int correctX = handAreaSize / (cardsInHand + 1) * (i + 1) - handAreaSize / 2;
                 correctX *= (int)nextCardIncrement.x;
 
-                float beta = cardsInHand > 1 ? Mathf.PI * i/(cardsInHand-1) : Mathf.PI; //if there's only one card in had it's placed in the middle, otherwise they are placed following a sine curve
-                int correctY =  (int)(_trueFanGap + Mathf.Sin(beta) * _trueFanCurve);
+                float beta = Mathf.PI * (i+1)/(cardsInHand+1); //if there's only one card in had it's placed in the middle, otherwise they are placed following a sine curve
+                int correctY =  (int)(_trueFanGap + Mathf.Sin(beta) * _trueFanCurve * cardsInHand);
 
                 rotX = -55; //value obtained through testing
                 float maxCardRotation = _cardRotPerCardInHand * (cardsInHand-1) / 2;
-                rotZ = (int)maxCardRotation * nextCardIncrement.x - 2*maxCardRotation * i/cardsInHand * nextCardIncrement.x;
+                rotZ = maxCardRotation * nextCardIncrement.x - 2*maxCardRotation * (i+1)/(cardsInHand+1) * nextCardIncrement.x;
                 Vector3 correctRotation = new Vector3(cardRotation.x + rotX, cardRotation.y + rotY, cardRotation.z + rotZ);
 
                 _cardsRectTransformList[i].anchorMin = anchors;
                 _cardsRectTransformList[i].anchorMax = anchors;
-                _cardsRectTransformList[i].localPosition = new Vector3(correctX, correctY, -correctZ);
+                _cardsRectTransformList[i].localPosition = new Vector3(correctX, correctY, -correctZ) ;
                 _cardsRectTransformList[i].rotation = Quaternion.Euler(correctRotation);
             }
             return;
         }
         for (int i = 0; i < cardsInHand; i++) //for the left and right players
         {
+            float beta = Mathf.PI * (i+1)/(cardsInHand+1);
+            float curveFactor = Mathf.Sin(beta) * _trueFanCurve;
+
             int correctY = (handAreaSize / (cardsInHand + 1)) * (i + 1) - handAreaSize / 2;
             correctY *= (int)-nextCardIncrement.y;
 
-            float beta = cardsInHand > 1 ? Mathf.PI * i / (cardsInHand - 1) : Mathf.PI;
-            int correctX = (int)(_trueFanGap + Mathf.Sin(beta) * _trueFanCurve * nextCardIncrement.y);
+            int correctX = (int)(_trueFanGap + curveFactor * cardsInHand * -nextCardIncrement.y);
 
-            rotY = 90 * (int)nextCardIncrement.y;
             float maxCardRotation = _cardRotPerCardInHand * (cardsInHand - 1) / 2;
-            rotX = (int)maxCardRotation * nextCardIncrement.x - 2 * maxCardRotation * i / cardsInHand * nextCardIncrement.x;
+            rotX = 0 /*maxCardRotation * -nextCardIncrement.y + _cardRotPerCardInHand * curveFactor * nextCardIncrement.y*/ ; //todo : P1(nI.y =-1) : + vers - ; P3 : - vers +
+            rotY = 65 * -nextCardIncrement.y;
+            rotZ = 90 * nextCardIncrement.y;
             Vector3 correctRotation = new Vector3(cardRotation.x + rotX, cardRotation.y + rotY, cardRotation.z + rotZ);
 
             _cardsRectTransformList[i].anchorMin = anchors;
